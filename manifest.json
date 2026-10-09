@@ -1,0 +1,19 @@
+{
+  "name": "EuroTracker 2027 — Viaje Familiar",
+  "short_name": "EuroTracker",
+  "description": "Aplicación móvil oficial de EuroTracker 2027: Finanzas en vivo, minutograma diario, monitoreo de vuelos y hub multi-agente para 9 viajeros.",
+  "start_url": "./app.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#090e0a",
+  "theme_color": "#090e0a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

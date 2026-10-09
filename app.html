@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>EuroTracker 2027 — Mobile App</title>
+    
+    <!-- PWA & Mobile Web App Meta Tags -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#090e0a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="EuroTracker">
+    <link rel="apple-touch-icon" href="./icon.svg">
+    
+    <!-- Google Fonts & Lucide Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Itinerary Shared Dataset with Smart Dual-Path Loading -->
+    <script src="./itinerary_data.js"></script>
+    <script>
+        if (!window.ITINERARY_DATA) {
+            document.write('<script src="/static/itinerary_data.js"><\/script>');
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-dark: #090e0a;
+            --bg-card: #121a13;
+            --bg-card-elevated: #1a251b;
+            --bg-card-subtle: #172218;
+            --forest-deep: #1e2b1d;
+            --forest-accent: #2e432c;
+            --gold-accent: #d4af37;
+            --gold-light: #f3e5ab;
+            --gold-glow: rgba(212, 175, 55, 0.22);
+            --green-emerald: #10b981;
+            --blue-accent: #38bdf8;
+            --text-main: #f4f6f3;
+            --text-muted: #9aa898;
+            --text-dim: #6b7a69;
+            --border-light: rgba(212, 175, 55, 0.16);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --radius-xl: 22px;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --safe-top: env(safe-area-inset-top, 12px);
+            --safe-bottom: env(safe-area-inset-bottom, 16px);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding-bottom: calc(75px + var(--safe-bottom));
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* TOP APP BAR */
+        .app-bar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(9, 14, 10, 0.94);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: calc(var(--safe-top) + 6px) 16px 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .brand-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .brand-badge {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.6rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            background: var(--gold-glow);
+            border: 1px solid var(--gold-accent);
+            color: var(--gold-accent);
+            padding: 2px 7px;
+            border-radius: 999px;
+        }
+
+        .app-bar-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rate-chip {
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #4ade80;
+            font-size: 0.68rem;
+            font-weight: 800;
+            padding: 4px 8px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-install-header {
+            background: linear-gradient(135deg, var(--gold-accent), #b38e22);
+            color: #090e0a;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.68rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* INSTALL BANNER */
+        .install-pwa-banner {
+            margin: 12px 16px 8px 16px;
+            padding: 12px 14px;
+            background: linear-gradient(135deg, rgba(30, 43, 29, 0.95), rgba(46, 62, 44, 0.95));
+            border: 1px solid var(--gold-accent);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+        }
+        .install-text {
+            font-size: 0.77rem;
+            color: var(--gold-light);
+            line-height: 1.35;
+        }
+        .install-text strong {
+            color: #ffffff;
+            font-weight: 800;
+        }
+        .install-btn {
+            background: var(--gold-accent);
+            color: #090e0a;
+            font-size: 0.72rem;
+            font-weight: 900;
+            padding: 7px 14px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+        }
+
+        /* CONTAINER */
+        .app-content {
+            padding: 8px 16px 20px 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* VIEWS / TABS */
+        .tab-view {
+            display: none;
+            animation: fadeIn 0.22s ease-out;
+        }
+        .tab-view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* CARDS */
+        .app-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .app-card.highlight {
+            border: 1px solid var(--border-light);
+            background: linear-gradient(180deg, var(--bg-card) 0%, rgba(30, 43, 29, 0.4) 100%);
+        }
+
+        /* CELL SELECTOR */
+        .cell-selector-row {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            margin-bottom: 12px;
+            scrollbar-width: none;
+        }
+        .cell-selector-row::-webkit-scrollbar { display: none; }
+
+        .cell-tab-btn {
+            flex: 1;
+            white-space: nowrap;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .cell-tab-btn.active {
+            background: var(--forest-deep);
+            border-color: var(--gold-accent);
+            color: var(--gold-light);
+            font-weight: 800;
+        }
+
+        /* BUDGET METRICS */
+        .budget-hero-box {
+            text-align: center;
+            padding: 20px 14px;
+            background: radial-gradient(circle at center, rgba(30, 43, 29, 0.8) 0%, rgba(18, 26, 19, 0.95) 100%);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-xl);
+            margin-bottom: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .budget-hero-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.06) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .budget-hero-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: var(--gold-accent);
+            margin-bottom: 4px;
+        }
+
+        .budget-hero-amount {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #4ade80;
+            line-height: 1.1;
+            letter-spacing: -0.5px;
+        }
+
+        .budget-hero-sub {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .savings-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+            padding: 4px 12px;
+            border-radius: 999px;
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(74, 222, 128, 0.4);
+            color: #86efac;
+            font-size: 0.72rem;
+            font-weight: 800;
+        }
+
+        /* CATEGORY BREAKDOWN CARDS */
+        .rubros-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .rubro-item {
+            background: var(--bg-card-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 12px;
+        }
+
+        .rubro-label {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .rubro-val-cop {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.2;
+        }
+
+        .rubro-val-eur {
+            font-size: 0.65rem;
+            color: var(--gold-light);
+            margin-top: 2px;
+        }
+
+        /* CONVERTER BOX */
+        .converter-box {
+            background: var(--bg-card-subtle);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 14px;
+            margin-bottom: 14px;
+        }
+
+        .converter-inputs {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .input-cur-box {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-cur-label {
+            font-size: 0.62rem;
+            color: var(--text-dim);
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .input-cur-field {
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-size: 1.05rem;
+            font-weight: 800;
+            outline: none;
+            width: 100%;
+        }
+
+        /* MINUTOGRAMA DAY SELECTOR */
+        .day-carousel {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 4px 0 12px 0;
+            margin-bottom: 14px;
+            scrollbar-width: none;
+        }
+        .day-carousel::-webkit-scrollbar { display: none; }
+
+        .day-pill {
+            flex-shrink: 0;
+            width: 62px;
+            padding: 8px 4px;
+            border-radius: var(--radius-md);
+            background: var(--bg-card-elevated);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .day-pill.active {
+            background: linear-gradient(135deg, var(--gold-accent), #b38e22);
+            color: #090e0a;
+            border-color: var(--gold-accent);
+            box-shadow: 0 4px 14px rgba(212, 175, 55, 0.35);
+        }
+
+        .day-pill-num {
+            font-size: 0.85rem;
+            font-weight: 900;
+            display: block;
+        }
+        .day-pill-city {
+            font-size: 0.58rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        /* TIMELINE STEPS */
+        .step-timeline-item {
+            display: flex;
+            gap: 12px;
+            position: relative;
+            padding-bottom: 16px;
+        }
+
+        .step-timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .step-timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 17px;
+            top: 26px;
+            bottom: 0;
+            width: 2px;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .step-timeline-item:last-child::before {
+            display: none;
+        }
+
+        .step-time-dot {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--bg-card-elevated);
+            border: 1px solid var(--border-light);
+            color: var(--gold-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 800;
+            flex-shrink: 0;
+            z-index: 1;
+        }
+
+        .step-content {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 10px 12px;
+        }
+
+        .step-time-tag {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: var(--gold-accent);
+            margin-bottom: 2px;
+        }
+
+        .step-desc {
+            font-size: 0.8rem;
+            color: var(--text-main);
+            line-height: 1.4;
+        }
+
+        /* BOTS STATUS CARDS */
+        .bot-card {
+            background: var(--bg-card-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .bot-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .bot-status-tag {
+            font-size: 0.62rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 2px 6px;
+            border-radius: 999px;
+            display: inline-block;
+            margin-bottom: 4px;
+        }
+
+        /* FLIGHT CARDS */
+        .flight-card-mobile {
+            background: var(--bg-card-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+
+        .flight-card-mobile.featured {
+            border: 1px solid var(--gold-accent);
+            background: linear-gradient(180deg, var(--bg-card-elevated) 0%, rgba(30, 43, 29, 0.5) 100%);
+        }
+
+        /* BOTTOM DOCK NAVIGATION */
+        .app-dock {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+            background: rgba(9, 14, 10, 0.95);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-top: 1px solid var(--border-subtle);
+            padding: 6px 10px calc(var(--safe-bottom) + 4px) 10px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .dock-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            padding: 4px 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .dock-item.active {
+            color: var(--gold-accent);
+        }
+
+        .dock-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .dock-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+        }
+
+        /* MODAL / TOAST */
+        .app-toast {
+            position: fixed;
+            top: calc(var(--safe-top) + 60px);
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: var(--forest-deep);
+            color: #ffffff;
+            border: 1px solid var(--gold-accent);
+            border-radius: 999px;
+            padding: 8px 18px;
+            font-size: 0.78rem;
+            font-weight: 800;
+            z-index: 1000;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .app-toast.visible {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP APP BAR -->
+    <header class="app-bar">
+        <div class="brand-box">
+            <span class="brand-title">
+                <i data-lucide="compass" style="width:20px; height:20px; color:var(--gold-accent);"></i>
+                EuroTracker
+            </span>
+            <span class="brand-badge">2027</span>
+        </div>
+
+        <div class="app-bar-actions">
+            <div class="rate-chip" id="chip-live-rate">
+                <span style="width:6px; height:6px; border-radius:50%; background:#4ade80;"></span>
+                <span>€1 = $3.625 COP</span>
+            </div>
+            <a href="./index.html" style="color:var(--text-muted); font-size:0.68rem; font-weight:700; text-decoration:none; padding:4px 8px; border:1px solid var(--border-subtle); border-radius:999px; display:inline-flex; align-items:center; gap:4px;">
+                🖥️ Web
+            </a>
+            <button class="btn-install-header" id="btn-header-install" onclick="triggerPwaInstall()">
+                <i data-lucide="download" style="width:12px; height:12px;"></i> Instalar
+            </button>
+        </div>
+    </header>
+
+    <!-- PWA INSTALL PROMPT BANNER (IF NOT STANDALONE) -->
+    <div class="install-pwa-banner" id="pwa-install-banner">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <i data-lucide="smartphone" style="width:24px; height:24px; color:var(--gold-accent); flex-shrink:0;"></i>
+            <div class="install-text">
+                <strong>Instala EuroTracker en tu celular</strong><br>
+                Acceso 100% offline, minutograma diario y precios en vivo.
+            </div>
+        </div>
+        <button class="install-btn" onclick="triggerPwaInstall()">
+            📲 Instalar
+        </button>
+    </div>
+
+    <!-- MAIN APP CONTENT (5 TAB VIEWS) -->
+    <main class="app-content">
+
+        <!-- ======================================================== -->
+        <!-- TAB 1: FINANZAS & MOVIMIENTO DEL PRESUPUESTO -->
+        <!-- ======================================================== -->
+        <section class="tab-view active" id="tab-view-finanzas">
+            
+            <!-- HERO BUDGET -->
+            <div class="budget-hero-box">
+                <div class="budget-hero-label">Presupuesto Consolidado Grupo (9 Pax)</div>
+                <div class="budget-hero-amount" id="budget-hero-cop">$79,701,625</div>
+                <div class="budget-hero-sub" id="budget-hero-per-pax">$8,855,736 COP por persona • 16 Noches</div>
+                <div class="savings-chip">
+                    <i data-lucide="trending-down" style="width:13px; height:13px;"></i>
+                    <span>Ahorro: -$36,499,652 COP (-31.41%) vs PDF</span>
+                </div>
+            </div>
+
+            <!-- FAMILY CELL SELECTOR -->
+            <div class="app-card highlight">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <span style="font-size:0.75rem; font-weight:800; color:var(--gold-light); text-transform:uppercase;">
+                        👥 Distribución por Célula Familiar
+                    </span>
+                    <span style="font-size:0.65rem; color:#86efac; font-weight:800;">Compra Autónoma</span>
+                </div>
+
+                <div class="cell-selector-row">
+                    <button class="cell-tab-btn active" onclick="selectCellTab(1, this)">Célula 1 (Camilo)</button>
+                    <button class="cell-tab-btn" onclick="selectCellTab(2, this)">Célula 2 (Angie)</button>
+                    <button class="cell-tab-btn" onclick="selectCellTab(3, this)">Célula 3 (Padres)</button>
+                </div>
+
+                <div id="cell-detail-content" style="background:rgba(0,0,0,0.25); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:12px;">
+                    <!-- Injected by JavaScript -->
+                </div>
+            </div>
+
+            <!-- 6 RUBROS DEL VIAJE -->
+            <div style="font-size:0.8rem; font-weight:800; color:#ffffff; margin:16px 0 8px 4px; display:flex; justify-content:space-between; align-items:center;">
+                <span>Desglose Real por Categoría</span>
+                <span style="font-size:0.68rem; color:var(--gold-accent);">1 EUR = $3,625 COP</span>
+            </div>
+
+            <div class="rubros-grid">
+                <div class="rubro-item">
+                    <div class="rubro-label">✈️ Vuelos Int.</div>
+                    <div class="rubro-val-cop">$20,952,500</div>
+                    <div class="rubro-val-eur">€5,780 EUR • 3 Maletas 23kg</div>
+                </div>
+                <div class="rubro-item">
+                    <div class="rubro-label">🏨 Alojamientos</div>
+                    <div class="rubro-val-cop">$25,973,125</div>
+                    <div class="rubro-val-eur">€6,600 Base + €565 Tasas</div>
+                </div>
+                <div class="rubro-item">
+                    <div class="rubro-label">🍽️ Comidas</div>
+                    <div class="rubro-val-cop">$11,893,625</div>
+                    <div class="rubro-val-eur">€3,281 EUR • €25/d adulto</div>
+                </div>
+                <div class="rubro-item">
+                    <div class="rubro-label">🚄 Trenes & Pases</div>
+                    <div class="rubro-val-cop">$9,406,875</div>
+                    <div class="rubro-val-eur">€2,595 EUR • TGV/Freccia</div>
+                </div>
+                <div class="rubro-item">
+                    <div class="rubro-label">🎟️ Entradas & Disney</div>
+                    <div class="rubro-val-cop">$6,075,500</div>
+                    <div class="rubro-val-eur">€1,676 EUR • Disney/Lindt</div>
+                </div>
+                <div class="rubro-item">
+                    <div class="rubro-label">🛡️ Contingencia</div>
+                    <div class="rubro-val-cop">$5,400,000</div>
+                    <div class="rubro-val-eur">$600k COP / persona</div>
+                </div>
+            </div>
+
+            <!-- CITY TAX ALERT -->
+            <div class="app-card" style="background:rgba(217, 119, 6, 0.1); border-color:rgba(245, 158, 11, 0.3);">
+                <div style="display:flex; align-items:flex-start; gap:10px;">
+                    <i data-lucide="receipt-text" style="width:20px; height:20px; color:#f59e0b; flex-shrink:0; margin-top:2px;"></i>
+                    <div style="font-size:0.75rem; color:#fef3c7; line-height:1.4;">
+                        <strong>Tasas Turísticas Municipales Transparentadas:</strong><br>
+                        Se pagan directamente en recepción al check-in: <strong>€565 EUR ($2,048,125 COP)</strong> total grupo entre Barcelona, París, Zúrich, Roma y Salerno.
+                    </div>
+                </div>
+            </div>
+
+            <!-- CURRENCY CONVERTER -->
+            <div class="converter-box">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:0.75rem; font-weight:800; color:var(--gold-light);">💱 Conversor Rápido de Viaje</span>
+                    <span style="font-size:0.68rem; color:var(--text-muted);">Tasa Oficial: 1 EUR = $3,625 COP</span>
+                </div>
+                <div class="converter-inputs">
+                    <div class="input-cur-box">
+                        <span class="input-cur-label">Euros (€)</span>
+                        <input type="number" id="conv-eur" class="input-cur-field" value="100" oninput="convertEurToCop(this.value)">
+                    </div>
+                    <i data-lucide="arrow-right-left" style="width:16px; height:16px; color:var(--gold-accent);"></i>
+                    <div class="input-cur-box">
+                        <span class="input-cur-label">Pesos (COP)</span>
+                        <input type="text" id="conv-cop" class="input-cur-field" value="$362,500" readonly>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- TAB 2: MINUTOGRAMA DIARIO (1 AL 17) -->
+        <!-- ======================================================== -->
+        <section class="tab-view" id="tab-view-itinerario">
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <div>
+                    <h2 style="font-size:1.15rem; font-weight:800; color:#ffffff;">Minutograma Detallado</h2>
+                    <span style="font-size:0.72rem; color:var(--text-muted);">17 Días • 5 Ciudades • Paso a Paso</span>
+                </div>
+                <span class="brand-badge" id="itinerary-current-city">Barcelona</span>
+            </div>
+
+            <!-- DAY CAROUSEL SELECTOR -->
+            <div class="day-carousel" id="day-selector-carousel">
+                <!-- Injected dynamically -->
+            </div>
+
+            <!-- SELECTED DAY CARD -->
+            <div id="day-detail-card-view">
+                <!-- Injected dynamically from ITINERARY_DATA -->
+            </div>
+
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- TAB 3: VUELOS & ALOJAMIENTOS 2027 -->
+        <!-- ======================================================== -->
+        <section class="tab-view" id="tab-view-vuelos">
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <div>
+                    <h2 style="font-size:1.15rem; font-weight:800; color:#ffffff;">Vuelos Multidestino (Open-Jaw)</h2>
+                    <span style="font-size:0.72rem; color:var(--text-muted);">Ida: 10 Sep (BOG-BCN) · Retorno: 27 Sep (FCO/NAP-BOG)</span>
+                </div>
+                <span class="brand-badge" style="background:#0284c7; border-color:#38bdf8; color:#ffffff;">Single PNR</span>
+            </div>
+
+            <!-- LOGISTICS BADGES -->
+            <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px;">
+                <span style="background:rgba(56, 189, 248, 0.15); border:1px solid #0284c7; color:#38bdf8; font-size:0.65rem; font-weight:800; padding:3px 8px; border-radius:999px;">
+                    🧳 1 Maleta 23kg por Célula (3 total)
+                </span>
+                <span style="background:rgba(212, 175, 55, 0.15); border:1px solid var(--gold-accent); color:var(--gold-accent); font-size:0.65rem; font-weight:800; padding:3px 8px; border-radius:999px;">
+                    👶 Cochecito Gate-Check Gratis
+                </span>
+            </div>
+
+            <!-- 4 FLIGHT OPTIONS -->
+            <div class="flight-card-mobile featured">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <strong style="color:var(--gold-light); font-size:0.88rem;">🟡 Iberia (Oneworld)</strong>
+                    <span style="background:#fef3c7; color:#92400e; font-size:0.62rem; font-weight:800; padding:2px 6px; border-radius:999px;">⭐ Recomendado</span>
+                </div>
+                <div style="font-size:0.76rem; color:var(--text-muted); margin-bottom:8px;">
+                    BOG ➔ MAD T4 ➔ BCN (Ida) // FCO ➔ MAD T4 ➔ BOG (Vuelta en A350)
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+                    <div>
+                        <div style="font-size:1.15rem; font-weight:900; color:#4ade80;">$5,600,625 COP</div>
+                        <div style="font-size:0.65rem; color:var(--text-muted);">€1,545 EUR Total Célula Camilo (3 pax)</div>
+                    </div>
+                    <a href="https://www.google.com/travel/flights?q=Flights%20from%20BOG%20to%20BCN%20on%202027-09-10%20and%20from%20FCO%20to%20BOG%20on%202027-09-27&curr=COP&hl=es" target="_blank" style="background:#0284c7; color:#ffffff; padding:6px 12px; border-radius:999px; font-size:0.68rem; font-weight:800; text-decoration:none;">
+                        Ver Google Flights ↗
+                    </a>
+                </div>
+            </div>
+
+            <div class="flight-card-mobile">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <strong style="color:#ffffff; font-size:0.88rem;">🔵 Air France (SkyTeam)</strong>
+                    <span style="background:#e0f2fe; color:#0369a1; font-size:0.62rem; font-weight:800; padding:2px 6px; border-radius:999px;">💡 Atajo Nápoles</span>
+                </div>
+                <div style="font-size:0.76rem; color:var(--text-muted); margin-bottom:8px;">
+                    BOG ➔ CDG ➔ BCN // Salida directa desde NAP Nápoles (a 40 min de Salerno)
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+                    <div>
+                        <div style="font-size:1.15rem; font-weight:900; color:#4ade80;">$5,818,125 COP</div>
+                        <div style="font-size:0.65rem; color:var(--text-muted);">€1,605 EUR Total Célula Camilo (3 pax)</div>
+                    </div>
+                    <a href="https://www.airfrance.com.co/" target="_blank" style="background:var(--forest-accent); color:#ffffff; padding:6px 12px; border-radius:999px; font-size:0.68rem; font-weight:800; text-decoration:none;">
+                        Air France ↗
+                    </a>
+                </div>
+            </div>
+
+            <div class="flight-card-mobile">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <strong style="color:#ffffff; font-size:0.88rem;">🔷 Air Europa (SkyTeam)</strong>
+                    <span style="background:#dcfce7; color:#15803d; font-size:0.62rem; font-weight:800; padding:2px 6px; border-radius:999px;">💰 Más Económico</span>
+                </div>
+                <div style="font-size:0.76rem; color:var(--text-muted); margin-bottom:8px;">
+                    BOG ➔ MAD T1 ➔ BCN // FCO ➔ MAD T1 ➔ BOG (Dreamliner B787-9)
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+                    <div>
+                        <div style="font-size:1.15rem; font-weight:900; color:#4ade80;">$5,056,875 COP</div>
+                        <div style="font-size:0.65rem; color:var(--text-muted);">€1,395 EUR Total Célula Camilo (3 pax)</div>
+                    </div>
+                    <a href="https://www.aireuropa.com/" target="_blank" style="background:var(--forest-accent); color:#ffffff; padding:6px 12px; border-radius:999px; font-size:0.68rem; font-weight:800; text-decoration:none;">
+                        Air Europa ↗
+                    </a>
+                </div>
+            </div>
+
+            <!-- ACCOMMODATION RULES & LIVE SEARCH -->
+            <div style="margin-top:20px; margin-bottom:10px;">
+                <h3 style="font-size:1.05rem; font-weight:800; color:#ffffff;">Alojamientos 3 Dorms / Privados</h3>
+                <span style="font-size:0.72rem; color:var(--text-muted);">Regla estricta: ≤ 65 €/pax/noche (máx €585/noche grupo) • Cero compartidos</span>
+            </div>
+
+            <div class="app-card">
+                <div style="font-size:0.78rem; color:var(--text-main); line-height:1.45; margin-bottom:12px;">
+                    Se buscan <strong>3 dormitorios privados</strong> (1 por célula) o <strong>espacios familiares enteros 100% exclusivos</strong>. Esto elimina sobrecostos de suites dispersas de lujo.
+                </div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <a href="https://www.booking.com/searchresults.es.html?ss=Barcelona%2C+Catalu%C3%B1a%2C+Espa%C3%B1a&checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=1&nflt=ht_id%3D201%3Bentire_place_bedroom_count%3D3%3Bprivacy_type%3D3" target="_blank" style="flex:1; background:#003580; color:#ffffff; text-align:center; padding:8px 10px; border-radius:var(--radius-md); font-size:0.72rem; font-weight:800; text-decoration:none;">
+                        Booking (3 Dorms) ↗
+                    </a>
+                    <a href="https://www.airbnb.es/s/Barcelona--Spain/homes?checkin=2027-09-11&checkout=2027-09-13&adults=7&children=1&infants=1&min_bedrooms=3&room_types%5B%5D=Entire+home%2Fapt&price_max=585" target="_blank" style="flex:1; background:#ff385c; color:#ffffff; text-align:center; padding:8px 10px; border-radius:var(--radius-md); font-size:0.72rem; font-weight:800; text-decoration:none;">
+                        Airbnb (Entero) ↗
+                    </a>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- TAB 4: CENTRO DE BOTS (TRABAJO MULTI-AGENTE) -->
+        <!-- ======================================================== -->
+        <section class="tab-view" id="tab-view-bots">
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <div>
+                    <h2 style="font-size:1.15rem; font-weight:800; color:#ffffff;">Centro de Bots & Agentes IA</h2>
+                    <span style="font-size:0.72rem; color:var(--text-muted);">Monitoreo y Automatización en Segundo Plano</span>
+                </div>
+                <button onclick="triggerRunPipeline()" style="background:linear-gradient(135deg, #10b981, #059669); color:#ffffff; border:none; padding:6px 12px; border-radius:999px; font-size:0.68rem; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:4px; box-shadow:0 3px 10px rgba(16,185,129,0.3);">
+                    <i data-lucide="play" style="width:11px; height:11px;"></i> Ejecutar Bots
+                </button>
+            </div>
+
+            <!-- BOT 1 -->
+            <div class="bot-card">
+                <div class="bot-icon" style="background:rgba(2, 132, 199, 0.2); color:#38bdf8;">
+                    <i data-lucide="plane"></i>
+                </div>
+                <div style="flex:1;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <strong style="font-size:0.85rem; color:#ffffff;">Flight Tracker Bot</strong>
+                        <span class="bot-status-tag" style="background:#dcfce7; color:#15803d;">Activo</span>
+                    </div>
+                    <p style="font-size:0.74rem; color:var(--text-muted); margin-top:2px;">
+                        Monitoreo de tiquetes multidestino BOG-BCN / FCO-BOG para 3 células (3 maletas total de 23kg y cunas mampara para Santiago).
+                    </p>
+                </div>
+            </div>
+
+            <!-- BOT 2 -->
+            <div class="bot-card">
+                <div class="bot-icon" style="background:rgba(225, 29, 72, 0.2); color:#fb7185;">
+                    <i data-lucide="building"></i>
+                </div>
+                <div style="flex:1;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <strong style="font-size:0.85rem; color:#ffffff;">Hotel Hunter Agent</strong>
+                        <span class="bot-status-tag" style="background:#dcfce7; color:#15803d;">Activo</span>
+                    </div>
+                    <p style="font-size:0.74rem; color:var(--text-muted); margin-top:2px;">
+                        Scraper calibrado a 3 dormitorios / 3 habitaciones privadas con tope estricto de ≤65 €/pax/noche y cero extraños.
+                    </p>
+                </div>
+            </div>
+
+            <!-- BOT 3 -->
+            <div class="bot-card">
+                <div class="bot-icon" style="background:rgba(245, 158, 11, 0.2); color:#fbbf24;">
+                    <i data-lucide="sun"></i>
+                </div>
+                <div style="flex:1;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <strong style="font-size:0.85rem; color:#ffffff;">Weather & Climate Bot</strong>
+                        <span class="bot-status-tag" style="background:#dcfce7; color:#15803d;">Sincronizado</span>
+                    </div>
+                    <p style="font-size:0.74rem; color:var(--text-muted); margin-top:2px;">
+                        Modelos meteorológicos para septiembre en BCN (24°C), PAR (20°C), ZRH (19°C), ROM (26°C) y SAL (25°C).
+                    </p>
+                </div>
+            </div>
+
+            <!-- BOT 4 -->
+            <div class="bot-card">
+                <div class="bot-icon" style="background:rgba(139, 92, 246, 0.2); color:#c084fc;">
+                    <i data-lucide="file-text"></i>
+                </div>
+                <div style="flex:1;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <strong style="font-size:0.85rem; color:#ffffff;">Document AI OCR Bot</strong>
+                        <span class="bot-status-tag" style="background:#fef3c7; color:#b45309;">En Espera</span>
+                    </div>
+                    <p style="font-size:0.74rem; color:var(--text-muted); margin-top:2px;">
+                        Lector automático de vouchers en PDF / imagen con extracción de localizadores, precios y fechas.
+                    </p>
+                </div>
+            </div>
+
+            <!-- BOT 5 -->
+            <div class="bot-card">
+                <div class="bot-icon" style="background:rgba(16, 185, 129, 0.2); color:#34d399;">
+                    <i data-lucide="calculator"></i>
+                </div>
+                <div style="flex:1;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <strong style="font-size:0.85rem; color:#ffffff;">Financial Auditor Bot</strong>
+                        <span class="bot-status-tag" style="background:#dcfce7; color:#15803d;">En Línea</span>
+                    </div>
+                    <p style="font-size:0.74rem; color:var(--text-muted); margin-top:2px;">
+                        Tasa de cambio $3,625 COP/EUR y recálculo en vivo de la variación presupuestal (-$36.5M COP ahorrados).
+                    </p>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- TAB 5: RESERVAS & DOCUMENTOS -->
+        <!-- ======================================================== -->
+        <section class="tab-view" id="tab-view-reservas">
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <div>
+                    <h2 style="font-size:1.15rem; font-weight:800; color:#ffffff;">Comprobantes & Reservas</h2>
+                    <span style="font-size:0.72rem; color:var(--text-muted);">Sube tus confirmaciones en PDF o foto</span>
+                </div>
+                <label for="mobileFileInput" style="background:var(--gold-accent); color:#090e0a; padding:6px 12px; border-radius:999px; font-size:0.68rem; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:4px;">
+                    <i data-lucide="plus" style="width:12px; height:12px;"></i> Subir Voucher
+                </label>
+                <input type="file" id="mobileFileInput" style="display:none;" accept=".pdf,.png,.jpg,.jpeg" onchange="uploadVoucher(event)">
+            </div>
+
+            <div id="upload-progress-box" style="display:none; background:rgba(34,197,94,0.1); border:1px solid #16a34a; border-radius:var(--radius-md); padding:10px; margin-bottom:12px; font-size:0.75rem; color:#86efac;">
+                ⏳ Subiendo y procesando comprobante con IA...
+            </div>
+
+            <!-- CONFIRMED BOOKINGS LIST FROM API -->
+            <div id="confirmed-bookings-list">
+                <div style="text-align:center; padding:20px; color:var(--text-muted); font-size:0.8rem;">
+                    Cargando reservas confirmadas...
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- BOTTOM APP DOCK -->
+    <nav class="app-dock">
+        <button class="dock-item active" id="dock-finanzas" onclick="switchTab('finanzas')">
+            <i data-lucide="wallet" class="dock-icon"></i>
+            <span class="dock-label">Finanzas</span>
+        </button>
+        <button class="dock-item" id="dock-itinerario" onclick="switchTab('itinerario')">
+            <i data-lucide="calendar" class="dock-icon"></i>
+            <span class="dock-label">Día a Día</span>
+        </button>
+        <button class="dock-item" id="dock-vuelos" onclick="switchTab('vuelos')">
+            <i data-lucide="plane" class="dock-icon"></i>
+            <span class="dock-label">Vuelos</span>
+        </button>
+        <button class="dock-item" id="dock-bots" onclick="switchTab('bots')">
+            <i data-lucide="bot" class="dock-icon"></i>
+            <span class="dock-label">Bots</span>
+        </button>
+        <button class="dock-item" id="dock-reservas" onclick="switchTab('reservas')">
+            <i data-lucide="folder-check" class="dock-icon"></i>
+            <span class="dock-label">Vouchers</span>
+        </button>
+    </nav>
+
+    <!-- TOAST NOTIFICATION -->
+    <div class="app-toast" id="app-toast">Acción completada con éxito</div>
+
+    <!-- JAVASCRIPT APPLICATION LOGIC -->
+    <script>
+        var EUR_RATE = 3625.0;
+        var selectedDay = 1;
+        var deferredPrompt = null;
+
+        // PWA Install Prompt handling
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const banner = document.getElementById('pwa-install-banner');
+            if (banner) banner.style.display = 'flex';
+        });
+
+        function triggerPwaInstall() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        showToast('¡Instalación aceptada! Revisa tu pantalla de inicio.');
+                        const banner = document.getElementById('pwa-install-banner');
+                        if (banner) banner.style.display = 'none';
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                // If on iOS or standalone
+                if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) {
+                    showToast('EuroTracker ya está instalada en tu dispositivo.');
+                } else {
+                    alert('Para instalar en iPhone/Safari:\n1. Toca el botón Compartir (el ícono del cuadrado con flecha abajo).\n2. Selecciona "Añadir a pantalla de inicio".\n\nEn Android/Chrome:\nToca los tres puntos arriba a la derecha y selecciona "Instalar aplicación".');
+                }
+            }
+        }
+
+        // Hide banner if running standalone
+        if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) {
+            const banner = document.getElementById('pwa-install-banner');
+            if (banner) banner.style.display = 'none';
+            const btn = document.getElementById('btn-header-install');
+            if (btn) btn.innerHTML = '<i data-lucide="check-circle-2" style="width:12px;height:12px;"></i> Instalada';
+        }
+
+        // Tab Navigation
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-view').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.dock-item').forEach(el => el.classList.remove('active'));
+
+            const targetView = document.getElementById('tab-view-' + tabId);
+            const targetDock = document.getElementById('dock-' + tabId);
+
+            if (targetView) targetView.classList.add('active');
+            if (targetDock) targetDock.classList.add('active');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            if (tabId === 'itinerario') renderDayCarousel();
+            if (tabId === 'reservas') loadBookings();
+            lucide.createIcons();
+        }
+
+        // Cell Tab Selection
+        var CELL_DATA = {
+            1: {
+                title: "Célula 1 · Camilo, Carolina & Santiago",
+                composition: "2 Adultos + 1 Infante (Santiago, 21m en regazo)",
+                totalCop: "$23,576,583 COP",
+                vuelosCop: "$5,600,625 COP (€1,545 EUR)",
+                equipaje: "1 Maleta bodega 23kg + 2 carry-on + Cochecito en puerta gratis",
+                notas: "Cuna mampara reservada sin costo en A350. 1 dormitorio privado. Santiago viaja 100% gratis en trenes y atracciones."
+            },
+            2: {
+                title: "Célula 2 · Angie, Gilberto & Sofía",
+                composition: "2 Adultos + 1 Niña (Sofía, 4 años)",
+                totalCop: "$27,187,083 COP",
+                vuelosCop: "$7,594,375 COP (€2,095 EUR con tarifa niño)",
+                equipaje: "1 Maleta bodega 23kg + 2 carry-on + Cochecito infantil",
+                notas: "Incluye Disney 2 Parques y Museo Lindt infantil. 1 dormitorio privado. Sofía ahorra en tarifas de tren y comida."
+            },
+            3: {
+                title: "Célula 3 · Alberto, Blanca & Alejandra",
+                composition: "3 Adultos",
+                totalCop: "$28,937,959 COP",
+                vuelosCop: "$7,757,500 COP (€2,140 EUR)",
+                equipaje: "1 Maleta bodega 23kg compartida + 3 carry-on de mano",
+                notas: "Mayor consumo del grupo (3 billetes completos de avión, trenes, comidas y entradas). 1 dormitorio privado con ascensor garantizado."
+            }
+        };
+
+        function selectCellTab(cellId, btn) {
+            document.querySelectorAll('.cell-tab-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+
+            const data = CELL_DATA[cellId];
+            const container = document.getElementById('cell-detail-content');
+            if (container && data) {
+                container.innerHTML = `
+                    <div style="font-size:0.86rem; font-weight:800; color:#ffffff; margin-bottom:4px;">${data.title}</div>
+                    <div style="font-size:0.74rem; color:var(--text-muted); margin-bottom:8px;">${data.composition}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.04); padding:8px 10px; border-radius:8px; margin-bottom:8px;">
+                        <span style="font-size:0.72rem; color:var(--text-muted);">Total Presupuesto Célula:</span>
+                        <strong style="font-size:1.05rem; color:#4ade80;">${data.totalCop}</strong>
+                    </div>
+                    <div style="font-size:0.73rem; color:var(--text-main); line-height:1.45;">
+                        • <strong>Vuelos:</strong> ${data.vuelosCop}<br>
+                        • <strong>Equipaje:</strong> ${data.equipaje}<br>
+                        • <strong>Logística:</strong> ${data.notas}
+                    </div>
+                `;
+            }
+        }
+
+        // Currency Converter
+        function convertEurToCop(eurVal) {
+            const num = parseFloat(eurVal) || 0;
+            const cop = num * EUR_RATE;
+            const copField = document.getElementById('conv-cop');
+            if (copField) {
+                copField.value = '$' + Math.round(cop).toLocaleString('es-CO');
+            }
+        }
+
+        // Render Day Selector Carousel
+        function renderDayCarousel() {
+            const carousel = document.getElementById('day-selector-carousel');
+            if (!carousel || !window.ITINERARY_DATA) return;
+
+            carousel.innerHTML = '';
+            window.ITINERARY_DATA.forEach(d => {
+                const pill = document.createElement('div');
+                pill.className = 'day-pill ' + (d.day === selectedDay ? 'active' : '');
+                pill.onclick = () => selectDay(d.day);
+                pill.innerHTML = `
+                    <span class="day-pill-num">D${d.day}</span>
+                    <span class="day-pill-city">${d.cityTag.toUpperCase()}</span>
+                `;
+                carousel.appendChild(pill);
+            });
+
+            renderDayDetail(selectedDay);
+        }
+
+        function selectDay(dayNum) {
+            selectedDay = dayNum;
+            document.querySelectorAll('.day-pill').forEach((p, idx) => {
+                if (idx + 1 === dayNum) p.classList.add('active');
+                else p.classList.remove('active');
+            });
+            renderDayDetail(dayNum);
+        }
+
+        function renderDayDetail(dayNum) {
+            const container = document.getElementById('day-detail-card-view');
+            if (!container || !window.ITINERARY_DATA) return;
+
+            const day = window.ITINERARY_DATA.find(d => d.day === dayNum) || window.ITINERARY_DATA[0];
+            const cityBadge = document.getElementById('itinerary-current-city');
+            if (cityBadge) cityBadge.textContent = day.imgTag || 'Europa';
+
+            let stepsHtml = '';
+            if (day.steps && day.steps.length) {
+                day.steps.forEach(s => {
+                    stepsHtml += `
+                        <div class="step-timeline-item">
+                            <div class="step-time-dot">${s.time.split(' ')[0]}</div>
+                            <div class="step-content">
+                                <div class="step-time-tag">${s.time}</div>
+                                <div class="step-desc">${s.desc}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            container.innerHTML = `
+                <div class="app-card highlight">
+                    <div style="font-size:0.75rem; font-weight:800; color:var(--gold-accent); text-transform:uppercase;">${day.date}</div>
+                    <h3 style="font-size:1.15rem; font-weight:900; color:#ffffff; margin:2px 0 6px 0;">${day.title}</h3>
+                    <div style="font-size:0.74rem; color:var(--text-muted); margin-bottom:12px;">${day.subtitle}</div>
+
+                    <!-- METRICS PILLS -->
+                    <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px;">
+                        <span style="background:rgba(255,255,255,0.06); padding:4px 8px; border-radius:999px; font-size:0.68rem; font-weight:700;">
+                            Despertar: <strong>${day.wake || '07:30 AM'}</strong>
+                        </span>
+                        <span style="background:rgba(255,255,255,0.06); padding:4px 8px; border-radius:999px; font-size:0.68rem; font-weight:700;">
+                            Esfuerzo: <strong>${day.effortText || '🟢 2.0 / 5'}</strong>
+                        </span>
+                    </div>
+
+                    ${day.weather ? `
+                    <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border-subtle); border-radius:10px; padding:10px 12px; margin-bottom:14px;">
+                        <div style="font-size:0.7rem; font-weight:800; color:var(--gold-light);">☀️ Clima & Vestimenta Sugerida:</div>
+                        <div style="font-size:0.74rem; color:var(--text-muted); margin-top:2px;">
+                            ${day.weather.temp} • ${day.weather.clothing || day.weather.summary}
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    <div style="font-size:0.8rem; font-weight:800; color:#ffffff; margin-bottom:12px;">
+                        🕒 Minutograma Paso a Paso:
+                    </div>
+                    <div style="margin-bottom:16px;">
+                        ${stepsHtml}
+                    </div>
+
+                    ${day.food ? `
+                    <div style="background:rgba(0,0,0,0.25); border-radius:10px; padding:12px; border:1px solid var(--border-subtle);">
+                        <div style="font-size:0.74rem; font-weight:800; color:var(--gold-light); margin-bottom:6px;">🍽️ Gastronomía del Día:</div>
+                        <div style="font-size:0.74rem; color:var(--text-muted); line-height:1.4;">
+                            • <strong>Almuerzo:</strong> ${day.food.lunch}<br>
+                            • <strong>Cena:</strong> ${day.food.dinner}<br>
+                            • <strong>Antojo / Postre:</strong> ${day.food.treat}
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        // Load Bookings from API
+        async function loadBookings() {
+            const listEl = document.getElementById('confirmed-bookings-list');
+            if (!listEl) return;
+
+            try {
+                const res = await fetch('/api/confirmed-bookings');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.bookings && data.bookings.length) {
+                        let html = '';
+                        data.bookings.forEach(b => {
+                            const isFlight = b.category === 'flight';
+                            const icon = isFlight ? 'plane' : 'building';
+                            html += `
+                                <div class="app-card" style="margin-bottom:10px; padding:12px 14px;">
+                                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px;">
+                                        <div style="display:flex; align-items:center; gap:8px;">
+                                            <i data-lucide="${icon}" style="width:16px; height:16px; color:var(--gold-accent);"></i>
+                                            <strong style="font-size:0.82rem; color:#ffffff;">${b.item_name}</strong>
+                                        </div>
+                                        <span style="font-size:0.62rem; font-weight:800; background:#dcfce7; color:#15803d; padding:2px 6px; border-radius:999px;">
+                                            ${b.status || 'Confirmado'}
+                                        </span>
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+                                        <span style="font-size:0.72rem; color:var(--text-muted);">${b.destination_city || 'Europa'} • Ref: ${b.booking_reference || 'N/A'}</span>
+                                        <strong style="font-size:0.88rem; color:#4ade80;">$${Number(b.price_cop || 0).toLocaleString('es-CO')} COP</strong>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        listEl.innerHTML = html;
+                        lucide.createIcons();
+                        return;
+                    }
+                }
+                listEl.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:0.8rem;">No hay vouchers registrados aún.</div>';
+            } catch(e) {
+                console.log('Error loading bookings:', e);
+                listEl.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:0.8rem;">Modo offline activo.</div>';
+            }
+        }
+
+        // Upload Voucher File
+        async function uploadVoucher(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const progress = document.getElementById('upload-progress-box');
+            if (progress) progress.style.display = 'block';
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const res = await fetch('/api/upload-document', { method: 'POST', body: formData });
+                if (res.ok) {
+                    showToast('¡Comprobante procesado exitosamente con IA!');
+                    loadBookings();
+                } else {
+                    showToast('Error al subir comprobante.');
+                }
+            } catch(err) {
+                showToast('Error de conexión al subir voucher.');
+            } finally {
+                if (progress) progress.style.display = 'none';
+            }
+        }
+
+        // Trigger Run Pipeline
+        async function triggerRunPipeline() {
+            showToast('Disparando rastreo multi-agente en segundo plano...');
+            try {
+                await fetch('/api/run', { method: 'POST' });
+            } catch(e) {}
+        }
+
+        // Toast Helper
+        function showToast(msg) {
+            const toast = document.getElementById('app-toast');
+            if (!toast) return;
+            toast.textContent = msg;
+            toast.classList.add('visible');
+            setTimeout(() => { toast.classList.remove('visible'); }, 3000);
+        }
+
+        // Apply Financial Data to UI
+        function applyFinancialData(fs) {
+            if (!fs) return;
+            const heroCop = document.getElementById('budget-hero-cop');
+            if (heroCop && fs.total_group_cop) heroCop.textContent = '$' + Number(fs.total_group_cop).toLocaleString('es-CO');
+
+            const heroPerPax = document.getElementById('budget-hero-per-pax');
+            if (heroPerPax && fs.total_estimated_cop_per_person) {
+                heroPerPax.textContent = '$' + Number(fs.total_estimated_cop_per_person).toLocaleString('es-CO') + ' COP por persona • 16 Noches';
+            }
+
+            if (fs.exchange_rate_used) {
+                EUR_RATE = fs.exchange_rate_used;
+                const chipRate = document.getElementById('chip-live-rate');
+                if (chipRate) chipRate.innerHTML = `<span style="width:6px;height:6px;border-radius:50%;background:#4ade80;"></span><span>€1 = $${Number(EUR_RATE).toLocaleString('es-CO')} COP</span>`;
+            }
+
+            // Update Cell Data if available in financial summary
+            if (fs.cell_camilo_cop) CELL_DATA[1].totalCop = '$' + Number(fs.cell_camilo_cop).toLocaleString('es-CO') + ' COP';
+            if (fs.cell_angie_cop) CELL_DATA[2].totalCop = '$' + Number(fs.cell_angie_cop).toLocaleString('es-CO') + ' COP';
+            if (fs.cell_padres_cop) CELL_DATA[3].totalCop = '$' + Number(fs.cell_padres_cop).toLocaleString('es-CO') + ' COP';
+            
+            // Re-render current cell tab
+            const activeBtn = document.querySelector('.cell-tab-btn.active');
+            if (activeBtn) selectCellTab(1, activeBtn);
+            else selectCellTab(1);
+        }
+
+        // Init App on Load
+        window.onload = () => {
+            if (window.lucide) lucide.createIcons();
+            selectCellTab(1);
+            renderDayCarousel();
+
+            // 1. Recover from LocalStorage immediately (Zero blank screen offline)
+            try {
+                const cachedRaw = localStorage.getItem('eurotracker_v2027_cache');
+                if (cachedRaw) {
+                    const cached = JSON.parse(cachedRaw);
+                    if (cached && cached.analysis && cached.analysis.financial_summary) {
+                        applyFinancialData(cached.analysis.financial_summary);
+                    }
+                }
+            } catch(e) {
+                console.log('Cache read fallback', e);
+            }
+
+            // 2. Register Service Worker with relative path
+            if ('serviceWorker' in navigator) {
+                const swPath = window.location.pathname.includes('/static/') ? './sw.js' : '/static/sw.js';
+                navigator.serviceWorker.register(swPath)
+                    .then(reg => {
+                        console.log('PWA SW registered:', reg.scope);
+                        reg.update();
+                    })
+                    .catch(err => console.log('SW reg error (normal in some sandboxes):', err));
+            }
+
+            // 3. Try fetching live API, then fallback to local static data.json
+            const apiEndpoints = ['/api/data', './data.json', 'data.json'];
+            
+            async function syncData() {
+                for (let endpoint of apiEndpoints) {
+                    try {
+                        const r = await fetch(endpoint);
+                        if (r.ok) {
+                            const d = await r.json();
+                            if (d && d.analysis && d.analysis.financial_summary) {
+                                applyFinancialData(d.analysis.financial_summary);
+                                // Save to local storage for offline use
+                                try {
+                                    localStorage.setItem('eurotracker_v2027_cache', JSON.stringify(d));
+                                } catch(err){}
+                                console.log('Synced successfully from:', endpoint);
+                                break;
+                            }
+                        }
+                    } catch(err) {
+                        // Continue to next endpoint
+                    }
+                }
+            }
+
+            syncData();
+        };
+    </script>
+</body>
+</html>
