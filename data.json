@@ -1,10 +1,10 @@
 {
   "status": "success",
-  "timestamp": "2026-10-29T09:30:00-05:00",
+  "timestamp": "2026-11-09T13:40:00-05:00",
   "analysis": {
-    "scraped_at": "2026-10-29T09:55:20.950992",
-    "exchange_rate": 3525.0,
-    "exchange_rate_vs_pdf_pct": -18.023255813953487,
+    "scraped_at": "2026-11-09T13:41:56.696719",
+    "exchange_rate": 3636.0,
+    "exchange_rate_vs_pdf_pct": -15.441860465116278,
     "flight_analysis": {
       "option_direct": {
         "inbound_flight": {
@@ -51,7 +51,7 @@
           }
         },
         "total_cop": 2611922.435192,
-        "total_eur": 740.9709036005675
+        "total_eur": 718.3505047282729
       },
       "option_via_madrid": {},
       "recommended_route": "Directa (BOG-BCN)",
@@ -593,42 +593,42 @@
       "cost_per_person_cop": 1700701.052565003
     },
     "financial_summary": {
-      "flights_cop_per_person": 2263833,
-      "accommodation_cop_per_person": 2806292,
-      "internal_transport_cop_per_person": 1016375,
-      "entries_cop_per_person": 656433,
-      "food_cop_per_person": 1285058,
+      "flights_cop_per_person": 2335120,
+      "accommodation_cop_per_person": 2894660,
+      "internal_transport_cop_per_person": 1048380,
+      "entries_cop_per_person": 677104,
+      "food_cop_per_person": 1325524,
       "contingency_cop_per_person": 600000.0,
-      "total_estimated_cop_per_person": 8627992,
-      "total_group_cop": 77651925.0,
-      "flights_total_cop": 20374500,
+      "total_estimated_cop_per_person": 8880788,
+      "total_group_cop": 79927092.0,
+      "flights_total_cop": 21016080,
       "flights_total_eur": 5780.0,
-      "hotels_base_cop": 23265000,
+      "hotels_base_cop": 23997600,
       "hotels_base_eur": 6600.0,
-      "city_taxes_total_cop": 1991625,
+      "city_taxes_total_cop": 2054340,
       "city_taxes_total_eur": 565.0,
-      "hotels_total_cop": 25256625,
+      "hotels_total_cop": 26051940,
       "hotels_total_eur": 7165.0,
-      "meals_total_cop": 11565525,
+      "meals_total_cop": 11929716,
       "meals_total_eur": 3281.0,
-      "transport_total_cop": 9147375,
+      "transport_total_cop": 9435420,
       "transport_total_eur": 2595.0,
-      "entries_total_cop": 5907900,
+      "entries_total_cop": 6093936,
       "entries_total_eur": 1676.0,
       "contingency_total_cop": 5400000.0,
-      "adult_cost_cop": 9115225,
-      "sofia_cost_cop": 7435238,
-      "santiago_cost_cop": 1695998,
-      "cell_camilo_cop": 22975850,
-      "cell_angie_cop": 26486750,
-      "cell_padres_cop": 28189325,
+      "adult_cost_cop": 9383364,
+      "sofia_cost_cop": 7655199,
+      "santiago_cost_cop": 1739957,
+      "cell_camilo_cop": 23642664,
+      "cell_angie_cop": 27264120,
+      "cell_padres_cop": 29020308,
       "budget_pdf_cop_per_person": 12911253.0,
       "total_pdf_group_cop": 116201277.0,
-      "total_group_savings_cop": 38549352.0,
-      "savings_per_person_cop": 4283261.0,
-      "savings_percentage": 33.17,
+      "total_group_savings_cop": 36274185.0,
+      "savings_per_person_cop": 4030465.0,
+      "savings_percentage": 31.22,
       "is_under_total_budget": true,
-      "exchange_rate_used": 3525.0
+      "exchange_rate_used": 3636.0
     },
     "tourist_entries": [
       {
@@ -669,10 +669,10 @@
       }
     ],
     "tourist_entries_total_eur": 247.0,
-    "tourist_entries_total_cop": 870675.0,
+    "tourist_entries_total_cop": 898092.0,
     "meals_days": 17,
     "meals_total_eur": 425.0,
-    "meals_total_cop": 1498125.0,
+    "meals_total_cop": 1545300.0,
     "buying_strategy": [
       {
         "category": "flight_int",
@@ -714,7 +714,7 @@
         "duration": "2 noches (3 días)",
         "best_option": "Tarjeta T-familiar (8 viajes) o T-casual (10 viajes)",
         "cost_eur": 10.7,
-        "cost_cop": 37717.5,
+        "cost_cop": 38905.2,
         "tip": "La T-familiar cuesta €10.70 y permite ser usada por varias personas simultáneamente (ideal para células familiares). Eviten billetes sencillos a €2.55."
       },
       {
@@ -722,7 +722,7 @@
         "duration": "3 noches (4 días)",
         "best_option": "Abono Navigo Semanal (Navigo Semaine - Zonas 1-5)",
         "cost_eur": 30.75,
-        "cost_cop": 108393.75,
+        "cost_cop": 111807.0,
         "tip": "El pase semanal ilimitado Navigo cuesta €30.75 (+€5 de tarjeta) y cubre metro, bus, RER y traslados a Disney (Zona 5) y aeropuertos. Es mucho más barato que comprar billetes individuales si van a Disney y al aeropuerto."
       },
       {
@@ -730,7 +730,7 @@
         "duration": "1 noche (2 días)",
         "best_option": "Abono ACTV 24 Horas o 48 Horas",
         "cost_eur": 25.0,
-        "cost_cop": 88125.0,
+        "cost_cop": 90900.0,
         "tip": "Un solo viaje en Vaporetto cuesta €9.50. El abono ilimitado de 24h cuesta €25.00 y el de 48h €35.00. Con realizar 3 viajes ya se amortiza totalmente."
       },
       {
@@ -738,7 +738,7 @@
         "duration": "7 noches (8 días)",
         "best_option": "Tarjeta Semanal CIS (Carta Integrata Settimanale)",
         "cost_eur": 24.0,
-        "cost_cop": 84600.0,
+        "cost_cop": 87264.0,
         "tip": "El pase de 7 días ilimitado cuesta €24.00. Comprar pases diarios de €7.00 por 7 días costaría €49.00. Ahorro directo de más del 50% por persona."
       },
       {
@@ -746,7 +746,7 @@
         "duration": "2 noches (3 días)",
         "best_option": "Tarjeta COSTASITA 24h/50h",
         "cost_eur": 10.0,
-        "cost_cop": 35250.0,
+        "cost_cop": 36360.0,
         "tip": "El billete COSTASITA de 24h (€10) o 50h (€15) permite viajes ilimitados en autobuses SITA Sud por toda la costa. Nota: Para adultos mayores, se recomienda priorizar ferries para evitar mareos por curvas."
       },
       {
@@ -754,7 +754,7 @@
         "duration": "1 noche (2 días)",
         "best_option": "Metrobús de 10 viajes (Tarjeta Multi Compartida)",
         "cost_eur": 12.2,
-        "cost_cop": 43005.0,
+        "cost_cop": 44359.2,
         "tip": "La tarjeta Multi cuesta €2.50 y el bono de 10 viajes €12.20. Es 100% multipersonal, por lo que una sola tarjeta puede ser compartida por una célula familiar completa."
       }
     ]
