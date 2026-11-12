@@ -1,0 +1,3475 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pipeline de Alojamientos — EuroTracker Septiembre 2027</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --secondary: #0d9488;
+            --accent: #f97316;
+            --booking-blue: #003580;
+            --airbnb-coral: #ff385c;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --badge-green: #dcfce7;
+            --badge-green-text: #166534;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding-bottom: 60px;
+        }
+        header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            color: white;
+            padding: 28px 24px 40px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .top-nav {
+            max-width: 1280px;
+            margin: 0 auto 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .nav-btn {
+            text-decoration: none;
+            color: #f8fafc;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.25);
+            padding: 7px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover { background: rgba(255,255,255,0.22); }
+        header h1 { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+        header p { color: #cbd5e1; font-size: 15px; max-width: 900px; margin: 0 auto; }
+        
+        .container {
+            max-width: 1280px;
+            margin: -24px auto 0;
+            padding: 0 20px;
+        }
+        
+        .alert-banner {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-left: 5px solid #2563eb;
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 18px;
+            font-size: 13.5px;
+            color: #1e3a8a;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+        .alert-banner strong { font-weight: 700; }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .kpi-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+        .kpi-title { font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 6px; }
+        .kpi-value { font-size: 23px; font-weight: 800; color: var(--primary); }
+        .kpi-sub { font-size: 12px; color: #10b981; margin-top: 4px; font-weight: 600; }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            background: #e2e8f0;
+            padding: 6px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 12px 18px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        .tab-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+        .tab-btn:hover:not(.active) { color: var(--text-main); }
+
+        .city-header {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .city-title { font-size: 20px; font-weight: 800; color: var(--text-main); }
+        .city-meta { font-size: 14px; color: var(--text-muted); margin-top: 4px; }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 20px;
+        }
+        .prop-card {
+            background: var(--card-bg);
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .prop-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+        .card-top {
+            padding: 14px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .platform-badge {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 20px;
+            color: white;
+        }
+        .platform-booking { background-color: var(--booking-blue); }
+        .platform-airbnb { background-color: var(--airbnb-coral); }
+        .rating-badge {
+            font-size: 13px;
+            font-weight: 700;
+            color: #047857;
+            background: #d1fae5;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .card-body {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .prop-name {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.3;
+        }
+        .prop-zone {
+            font-size: 13px;
+            color: var(--secondary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            gap: 6px;
+            border: 1px solid #f1f5f9;
+        }
+        .spec-item .label { font-size: 11px; color: var(--text-muted); }
+        .spec-item .value { font-size: 13px; font-weight: 700; color: var(--text-main); }
+
+        .price-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 10px;
+            padding: 12px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .price-main { font-size: 20px; font-weight: 800; color: var(--primary); }
+        .price-sub { font-size: 12px; color: var(--text-muted); }
+        .per-person { text-align: right; font-size: 12px; }
+        .per-person strong { font-size: 14px; color: #166534; }
+
+        .feature-tag {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+            margin-right: 4px;
+            margin-bottom: 4px;
+        }
+        .tag-baby { background: var(--badge-green); color: var(--badge-green-text); }
+        .tag-transit { background: #e0e7ff; color: #3730a3; }
+        .tag-safe { background: #fef3c7; color: #92400e; }
+        .tag-direct { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+
+        .card-footer {
+            padding: 16px 20px;
+            background: #f8fafc;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .btn-link {
+            display: inline-block;
+            text-decoration: none;
+            color: white;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 10px 14px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            width: 100%;
+            text-align: center;
+        }
+        .btn-booking { background: var(--booking-blue); }
+        .btn-booking:hover { background: #00224f; }
+        .btn-airbnb { background: var(--airbnb-coral); }
+        .btn-airbnb:hover { background: #e00b41; }
+
+        .baby-box {
+            font-size: 12px;
+            color: #334155;
+            background: #f0fdf4;
+            border-left: 3px solid #22c55e;
+            padding: 8px 10px;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        .city-content { display: none; }
+        .city-content.active { display: block; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="top-nav">
+        <div style="font-size:13px; font-weight:700; color:#93c5fd;">
+            🟢 PIPELINE ACTIVO · Actualizado al 12 de Noviembre de 2026 (TRM: $3,636 COP/EUR)
+        </div>
+        <div class="nav-links">
+            <a href="./index.html" class="nav-btn">🖥️ Volver al Tablero Financiero Web</a>
+            <a href="./app.html" class="nav-btn">📱 Abrir Mobile App</a>
+        </div>
+    </div>
+    <h1>Explorador y Comparador de Alojamientos — Europa Septiembre 2027</h1>
+    <p>3 Células Familiares (7 adultos + Sofía 4a + Santiago 21m) | Regla: <strong>3 Dormitorios o 3 Habitaciones Privadas (Cero Extraños)</strong> | Tope: ≤ 65 € / pax / noche (máx 585 € / noche)</p>
+</header>
+
+<div class="container">
+    <div class="alert-banner">
+        <strong>📌 Estado de Disponibilidad a Hoy (12 de Noviembre de 2026 — A 302 días del viaje):</strong><br>
+        1. <strong>Regla de 3 Células Familiares Aplicada:</strong> Todos los enlaces están calibrados para <strong>3 dormitorios privados</strong> (en apartamentos enteros) o <strong>3 habitaciones privadas independientes</strong> (en hoteles, 1 por cada célula familiar), eliminando el filtro antiguo de 4 dormitorios que encarecía y restringía la búsqueda.<br>
+        2. <strong>Enlaces Profundos con Fechas y Huéspedes Inyectados:</strong> Cada tarjeta tiene botones directos a <strong>Booking.com (con tus fechas y 9 pasajeros)</strong>, <strong>Búsqueda Directa en Booking</strong>, <strong>Google Hotels (comparador de tarifas y mapa)</strong> y <strong>Airbnb (3+ dormitorios enteros)</strong>.
+    </div>
+
+    <div class="alert-banner" style="background:#f0fdf4; border-color:#86efac; border-left-color:#16a34a; color:#14532d;">
+        <strong>🪜 Comparativa en Cada Ciudad: Con Ascensor vs. Planta Baja / 1er Piso Sin Ascensor</strong><br>
+        • En cada pestaña encontrarás tanto opciones con <strong>🛗 Ascensor garantizado</strong> como alternativas en <strong>🪜 Planta Baja (cero escalones) o 1er Piso (14–18 escalones)</strong>.<br>
+        • Elegir una planta baja o 1er piso en centros históricos como Eixample, Barrio Latino, Altstadt o Rione Monti ahorra entre <strong>€70 y €135 por noche</strong> (hasta <strong>€1,430 EUR / ~$5.20M COP</strong> en las 16 noches).
+    </div>
+
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-title">Configuración Grupo</div>
+            <div class="kpi-value">3 Células (9 Pax)</div>
+            <div class="kpi-sub">3 Dorms o 3 Habs Privadas</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-title">Presupuesto Base 16N</div>
+            <div class="kpi-value">€7,760 EUR</div>
+            <div class="kpi-sub">+ €525 Tasas = $30.12M COP</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-title">Costo por Célula (16N)</div>
+            <div class="kpi-value">$10,041,420 COP</div>
+            <div class="kpi-sub">€2,761.67 EUR (Tasas incl.)</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-title">Opciones Verificadas</div>
+            <div class="kpi-value">35 Propiedades</div>
+            <div class="kpi-sub">+ 25 Buscadores en Vivo</div>
+        </div>
+    </div>
+
+    <div class="tabs" id="tabs">
+        <!-- Generado por JS -->
+    </div>
+
+    <div id="city-sections">
+        <!-- Generado dinámicamente -->
+    </div>
+</div>
+
+<script>
+const DATA = {
+  "cities": [
+    {
+      "id": "barcelona",
+      "name": "Barcelona",
+      "country": "España",
+      "checkin": "2027-09-11",
+      "checkout": "2027-09-13",
+      "nights": 2,
+      "target_neighborhoods": [
+        "Eixample Dret",
+        "Eixample Esquerra",
+        "Sagrada Família",
+        "Gràcia"
+      ],
+      "strategic_landmark": "Passeig de Gràcia / Sagrada Família",
+      "key_transit": [
+        "Metro L2",
+        "Metro L3",
+        "Metro L4",
+        "Metro L5"
+      ],
+      "safety_priority": "Máxima tranquilidad residencial, cuadrícula llana ideal para cochecito de bebé",
+      "search_query_booking": "Eixample, Barcelona, Spain",
+      "search_query_airbnb": "Eixample--Barcelona--Spain",
+      "live_search_urls": {
+        "booking_apartments_3br": "https://www.booking.com/searchresults.es.html?ss=Eixample%2C+Barcelona%2C+Spain&checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=1&nflt=ht_id%3D201%3Bentire_place_bedroom_count%3D3%3Bprivacy_type%3D3",
+        "booking_apartments_entire": "https://www.booking.com/searchresults.es.html?ss=Eixample%2C+Barcelona%2C+Spain&checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=1&nflt=ht_id%3D201%3Bprivacy_type%3D3",
+        "booking_hotels_3rooms": "https://www.booking.com/searchresults.es.html?ss=Eixample%2C+Barcelona%2C+Spain&checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=3&nflt=ht_id%3D204%3Bprivacy_type%3D3",
+        "airbnb_apartments_3br": "https://www.airbnb.es/s/Eixample--Barcelona--Spain/homes?checkin=2027-09-11&checkout=2027-09-13&adults=7&children=1&infants=1&min_bedrooms=3&room_types%5B%5D=Entire+home%2Fapt&price_max=585",
+        "airbnb_entire_home": "https://www.airbnb.es/s/Eixample--Barcelona--Spain/homes?checkin=2027-09-11&checkout=2027-09-13&adults=7&children=1&infants=1&room_types%5B%5D=Entire+home%2Fapt&price_max=585",
+        "google_hotels_city": "https://www.google.com/travel/hotels?q=Hoteles+familiares+Barcelona+Espa%C3%B1a&dates=2027-09-11,2027-09-13&adults=7&hl=es"
+      }
+    },
+    {
+      "id": "paris",
+      "name": "París",
+      "country": "Francia",
+      "checkin": "2027-09-13",
+      "checkout": "2027-09-17",
+      "nights": 4,
+      "target_neighborhoods": [
+        "Distrito 5 (Quartier Latin)",
+        "Distrito 6 (Saint-Germain)",
+        "Distrito 11/12 (Bastille / Gare de Lyon)"
+      ],
+      "strategic_landmark": "Jardins du Luxembourg / Gare de Lyon (RER A Disney & TGV Suiza)",
+      "key_transit": [
+        "RER A (Disney)",
+        "RER B",
+        "Metro L1",
+        "Metro L7",
+        "Metro L14 (100% Accesible)"
+      ],
+      "safety_priority": "Distrito familiar seguro, conexión directa a Disneyland y salida en TGV Lyria a Zúrich",
+      "search_query_booking": "Paris, France",
+      "search_query_airbnb": "Paris--France",
+      "live_search_urls": {
+        "booking_apartments_3br": "https://www.booking.com/searchresults.es.html?ss=Paris%2C+France&checkin=2027-09-13&checkout=2027-09-17&group_adults=7&group_children=2&age=4&age=1&no_rooms=1&nflt=ht_id%3D201%3Bentire_place_bedroom_count%3D3%3Bprivacy_type%3D3",
+        "booking_apartments_entire": "https://www.booking.com/searchresults.es.html?ss=Paris%2C+France&checkin=2027-09-13&checkout=2027-09-17&group_adults=7&group_children=2&age=4&age=1&no_rooms=1&nflt=ht_id%3D201%3Bprivacy_type%3D3",
+        "booking_hotels_3rooms": "https://www.booking.com/searchresults.es.html?ss=Paris%2C+France&checkin=2027-09-13&checkout=2027-09-17&group_adults=7&group_children=2&age=4&age=1&no_rooms=3&nflt=ht_id%3D204%3Bprivacy_type%3D3",
+        "airbnb_apartments_3br": "https://www.airbnb.es/s/Paris--France/homes?checkin=2027-09-13&checkout=2027-09-17&adults=7&children=1&infants=1&min_bedrooms=3&room_types%5B%5D=Entire+home%2Fapt&price_max=585",
+        "airbnb_entire_home": "https://www.airbnb.es/s/Paris--France/homes?checkin=2027-09-13&checkout=2027-09-17&adults=7&children=1&infants=1&room_types%5B%5D=Entire+home%2Fapt&price_max=585",
+        "google_hotels_city": "https://www.google.com/travel/hotels?q=Hoteles+familiares+Par%C3%ADs+Francia&dates=2027-09-13,2027-09-17&adults=7&hl=es"
+      }
+    },
+    {
+      "id": "zurich",
+      "name": "Zúrich",
+      "country": "Suiza",
+      "checkin": "2027-09-17",
+      "checkout": "2027-09-19",
+      "nights": 2,
+      "target_neighborhoods": [
+        "Kreis 1 (Altstadt / HB)",
+        "Enge (Lago & Lindt)",
+        "Wiedikon"
+      ],
+      "strategic_landmark": "Zürich HB (Estación Central) / Lago de Zúrich",
+      "key_transit": [
+        "Tranvías ZVV",
+        "Zürich HB S-Bahn",
+        "Bus 165 / Barco a Kilchberg (Lindt)"
+      ],
+      "safety_priority": "Conectividad sin taxis a los trenes internacionales y cercanía a Lindt Home of Chocolate",
+      "search_query_booking": "Zurich, Switzerland",
+      "search_query_airbnb": "Zurich--Switzerland",
+      "live_search_urls": {
+        "booking_apartments_3br": "https://www.booking.com/searchresults.es.html?ss=Zurich%2C+Switzerland&checkin=2027-09-17&checkout=2027-09-19&group_adults=7&group_children=2&age=4&age=1&no_rooms=1&nflt=ht_id%3D201%3Bentire_place_bedroom_count%3D3%3Bprivacy_type%3D3",
+        "booking_apartments_entire": "https://www.booking.com/searchresults.es.html?ss=Zurich%2C+Switzerland&checkin=2027-09-17&checkout=2027-09-19&group_adults=7&group_children=2&age=4&age=1&no_rooms=1&nflt=ht_id%3D201%3Bprivacy_type%3D3",
+        "booking_hotels_3rooms": "https://www.booking.com/searchresults.es.html?ss=Zurich%2C+Switzerland&checkin=2027-09-17&checkout=2027-09-19&group_adults=7&group_children=2&age=4&age=1&no_rooms=3&nflt=ht_id%3D204%3Bprivacy_type%3D3",
+        "airbnb_apartments_3br": "https://www.airbnb.es/s/Zurich--Switzerland/homes?checkin=2027-09-17&checkout=2027-09-19&adults=7&children=1&infants=1&min_bedrooms=3&room_types%5B%5D=Entire+home%2Fapt&price_max=585",
+        "airbnb_entire_home": "https://www.airbnb.es/s/Zurich--Switzerland/homes?checkin=2027-09-17&checkout=2027-09-19&adults=7&children=1&infants=1&room_types%5B%5D=Entire+home%2Fapt&price_max=585",
+        "google_hotels_city": "https://www.google.com/travel/hotels?q=Hoteles+familiares+Z%C3%BArich+Suiza&dates=2027-09-17,2027-09-19&adults=7&hl=es"
+      }
+    },
+    {
+      "id": "rome",
+      "name": "Roma",
+      "country": "Italia",
+      "checkin": "2027-09-19",
+      "checkout": "2027-09-24",
+      "nights": 5,
+      "target_neighborhoods": [
+        "Rione Monti",
+        "Celio / Colosseo",
+        "San Giovanni / Manzoni"
+      ],
+      "strategic_landmark": "Colosseo / Roma Termini",
+      "key_transit": [
+        "Metro B (Cavour/Colosseo)",
+        "Metro A (Manzoni/Vaticano)",
+        "Roma Termini"
+      ],
+      "safety_priority": "Cerca al Coliseo y Termini, trattorias familiares, fácil acceso peatonal y metro",
+      "search_query_booking": "Monti, Rome, Italy",
+      "search_query_airbnb": "Monti--Rome--Italy",
+      "live_search_urls": {
+        "booking_apartments_3br": "https://www.booking.com/searchresults.es.html?ss=Monti%2C+Rome%2C+Italy&checkin=2027-09-19&checkout=2027-09-24&group_adults=7&group_children=2&age=4&age=1&no_rooms=1&nflt=ht_id%3D201%3Bentire_place_bedroom_count%3D3%3Bprivacy_type%3D3",
+        "booking_apartments_entire": "https://www.booking.com/searchresults.es.html?ss=Monti%2C+Rome%2C+Italy&checkin=2027-09-19&checkout=2027-09-24&group_adults=7&group_children=2&age=4&age=1&no_rooms=1&nflt=ht_id%3D201%3Bprivacy_type%3D3",
+        "booking_hotels_3rooms": "https://www.booking.com/searchresults.es.html?ss=Monti%2C+Rome%2C+Italy&checkin=2027-09-19&checkout=2027-09-24&group_adults=7&group_children=2&age=4&age=1&no_rooms=3&nflt=ht_id%3D204%3Bprivacy_type%3D3",
+        "airbnb_apartments_3br": "https://www.airbnb.es/s/Monti--Rome--Italy/homes?checkin=2027-09-19&checkout=2027-09-24&adults=7&children=1&infants=1&min_bedrooms=3&room_types%5B%5D=Entire+home%2Fapt&price_max=585",
+        "airbnb_entire_home": "https://www.airbnb.es/s/Monti--Rome--Italy/homes?checkin=2027-09-19&checkout=2027-09-24&adults=7&children=1&infants=1&room_types%5B%5D=Entire+home%2Fapt&price_max=585",
+        "google_hotels_city": "https://www.google.com/travel/hotels?q=Hoteles+familiares+Roma+Italia&dates=2027-09-19,2027-09-24&adults=7&hl=es"
+      }
+    },
+    {
+      "id": "salerno",
+      "name": "Salerno",
+      "country": "Italia",
+      "checkin": "2027-09-24",
+      "checkout": "2027-09-27",
+      "nights": 3,
+      "target_neighborhoods": [
+        "Corso Vittorio Emanuele",
+        "Centro Storico",
+        "Lungomare Trieste / Molo Concordia"
+      ],
+      "strategic_landmark": "Molo Concordia / Manfredi (Ferry Amalfi/Positano) & Stazione Salerno",
+      "key_transit": [
+        "Ferries Travelmar (Amalfi/Positano)",
+        "Frecciarossa Alta Velocidad"
+      ],
+      "safety_priority": "Paseo 100% plano entre la estación de tren y el muelle de ferries a la Costa Amalfitana",
+      "search_query_booking": "Salerno, Campania, Italy",
+      "search_query_airbnb": "Salerno--Italy",
+      "live_search_urls": {
+        "booking_apartments_3br": "https://www.booking.com/searchresults.es.html?ss=Salerno%2C+Campania%2C+Italy&checkin=2027-09-24&checkout=2027-09-27&group_adults=7&group_children=2&age=4&age=1&no_rooms=1&nflt=ht_id%3D201%3Bentire_place_bedroom_count%3D3%3Bprivacy_type%3D3",
+        "booking_apartments_entire": "https://www.booking.com/searchresults.es.html?ss=Salerno%2C+Campania%2C+Italy&checkin=2027-09-24&checkout=2027-09-27&group_adults=7&group_children=2&age=4&age=1&no_rooms=1&nflt=ht_id%3D201%3Bprivacy_type%3D3",
+        "booking_hotels_3rooms": "https://www.booking.com/searchresults.es.html?ss=Salerno%2C+Campania%2C+Italy&checkin=2027-09-24&checkout=2027-09-27&group_adults=7&group_children=2&age=4&age=1&no_rooms=3&nflt=ht_id%3D204%3Bprivacy_type%3D3",
+        "airbnb_apartments_3br": "https://www.airbnb.es/s/Salerno--Italy/homes?checkin=2027-09-24&checkout=2027-09-27&adults=7&children=1&infants=1&min_bedrooms=3&room_types%5B%5D=Entire+home%2Fapt&price_max=585",
+        "airbnb_entire_home": "https://www.airbnb.es/s/Salerno--Italy/homes?checkin=2027-09-24&checkout=2027-09-27&adults=7&children=1&infants=1&room_types%5B%5D=Entire+home%2Fapt&price_max=585",
+        "google_hotels_city": "https://www.google.com/travel/hotels?q=Hoteles+familiares+Salerno+Italia&dates=2027-09-24,2027-09-27&adults=7&hl=es"
+      }
+    }
+  ],
+  "properties": {
+    "barcelona": [
+      {
+        "id": "bcn_b_walkup_pb",
+        "platform": "booking",
+        "name": "Habitat Apartments Ferran / Eixample con Jardín (Planta Baja - Cero Escalones)",
+        "city_id": "barcelona",
+        "property_type": "Planta baja señorial con patio privado (3 dormitorios grandes)",
+        "neighborhood": "Eixample Esquerra",
+        "address": "Carrer de Mallorca / Villarroel, Barcelona",
+        "price_per_night_eur": 395.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 2.0,
+        "rating": 9.2,
+        "review_count": 310,
+        "no_rooms": 1,
+        "privacy": "100% Privado (Planta baja entera con jardín privado)",
+        "elevator_status": "Sin Ascensor Necesario (Planta Baja / Cero Escalones)",
+        "transit_proximity": "Metro Hospital Clínic (L5) a 200 m y Urgell (L1) a 350 m",
+        "amenities": [
+          "Patio interior cerrado",
+          "Cocina espaciosa",
+          "Cuna de viaje gratis",
+          "Trona",
+          "AC"
+        ],
+        "baby_notes": "Entrada directa a pie de calle sin escaleras. El cochecito de Santiago entra rodando sin plegar.",
+        "hotel_slug": "habitat-apartments-ferran",
+        "country_code": "es",
+        "multiplatform": {
+          "google_hotels": "https://www.google.com/travel/hotels?q=Habitat+Apartments+Ferran+%2F+Eixample+con+Jard%C3%ADn+barcelona&dates=2027-09-11,2027-09-13&adults=7&hl=es",
+          "booking_direct": "https://www.booking.com/hotel/es/habitat-apartments-ferran.es.html",
+          "booking_with_dates": "https://www.booking.com/hotel/es/habitat-apartments-ferran.es.html?checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "booking_search_prop": "https://www.booking.com/searchresults.es.html?ss=Habitat+Apartments+Ferran+%2F+Eixample+con+Jard%C3%ADn+barcelona&checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "trivago": "https://www.trivago.es/es-ES/srl/alojamiento-barcelona?search=100-200;dr-20270911-20270913;rc-1-7",
+          "official_web": ""
+        },
+        "url": "https://www.booking.com/hotel/es/habitat-apartments-ferran.es.html?checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "google_hotels_url": "https://www.google.com/travel/hotels?q=Habitat+Apartments+Ferran+%2F+Eixample+con+Jard%C3%ADn+barcelona&dates=2027-09-11,2027-09-13&adults=7&hl=es",
+        "booking_url": "https://www.booking.com/hotel/es/habitat-apartments-ferran.es.html",
+        "booking_dates_url": "https://www.booking.com/hotel/es/habitat-apartments-ferran.es.html?checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "booking_search_prop_url": "https://www.booking.com/searchresults.es.html?ss=Habitat+Apartments+Ferran+%2F+Eixample+con+Jard%C3%ADn+barcelona&checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "trivago_url": "https://www.trivago.es/es-ES/srl/alojamiento-barcelona?search=100-200;dr-20270911-20270913;rc-1-7",
+        "link_type": "Apartamento Entero (3 Dorms / 1 por Célula) · Sin Ascensor Necesario (Planta Baja / Cero Escalones)",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 2.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 395.0,
+          "total_stay_eur": 790.0,
+          "cost_person_night_8": 49.38,
+          "cost_person_night_9": 43.89,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 190.0,
+          "total_savings_stay_eur": 380.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": true,
+          "crib_status": "Cuna disponible GRATIS",
+          "family_amenities": [
+            "trona"
+          ],
+          "baby_score": 9.5,
+          "notes": "En Booking se confirma cuna en el paso de reserva."
+        },
+        "location": {
+          "location_score": 9.5,
+          "strategic_highlights": [
+            "Eixample (la zona más segura y llana)"
+          ],
+          "transit_proximity": "Metro Hospital Clínic (L5) a 200 m y Urgell (L1) a 350 m"
+        }
+      },
+      {
+        "id": "bcn_b_habitat",
+        "platform": "booking",
+        "name": "Habitat Apartments Boulevard / Tetuan (Apartamento Entero 3 Dorms)",
+        "city_id": "barcelona",
+        "property_type": "Apartamento entero privado (3 dormitorios amplios + salón)",
+        "neighborhood": "Eixample Dret",
+        "address": "Gran Via de les Corts Catalanes / Tetuan, Eixample, Barcelona",
+        "price_per_night_eur": 430.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 2.0,
+        "rating": 8.9,
+        "review_count": 840,
+        "no_rooms": 1,
+        "privacy": "100% Privado (Apartamento exclusivo para las 3 células familiares)",
+        "elevator_status": "Con Ascensor (Cota Cero)",
+        "transit_proximity": "Metro Tetuan (L2) a 140 m y Girona (L4) a 280 m",
+        "amenities": [
+          "Cocina completa",
+          "Cuna gratis",
+          "Trona",
+          "Ascensor llano",
+          "Lavadora/Secadora",
+          "Wifi",
+          "AC"
+        ],
+        "baby_notes": "Cuna y trona incluidas sin cargo. 1 dormitorio por célula familiar. Ascensor a cota cero en finca clásica reformada.",
+        "hotel_slug": "habitat-apartments-boulevard",
+        "country_code": "es",
+        "multiplatform": {
+          "google_hotels": "https://www.google.com/travel/hotels?q=Habitat+Apartments+Boulevard+%2F+Tetuan+barcelona&dates=2027-09-11,2027-09-13&adults=7&hl=es",
+          "booking_direct": "https://www.booking.com/hotel/es/habitat-apartments-boulevard.es.html",
+          "booking_with_dates": "https://www.booking.com/hotel/es/habitat-apartments-boulevard.es.html?checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "booking_search_prop": "https://www.booking.com/searchresults.es.html?ss=Habitat+Apartments+Boulevard+%2F+Tetuan+barcelona&checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "trivago": "https://www.trivago.es/es-ES/srl/alojamiento-barcelona?search=100-200;dr-20270911-20270913;rc-1-7",
+          "official_web": ""
+        },
+        "url": "https://www.booking.com/hotel/es/habitat-apartments-boulevard.es.html?checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "google_hotels_url": "https://www.google.com/travel/hotels?q=Habitat+Apartments+Boulevard+%2F+Tetuan+barcelona&dates=2027-09-11,2027-09-13&adults=7&hl=es",
+        "booking_url": "https://www.booking.com/hotel/es/habitat-apartments-boulevard.es.html",
+        "booking_dates_url": "https://www.booking.com/hotel/es/habitat-apartments-boulevard.es.html?checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "booking_search_prop_url": "https://www.booking.com/searchresults.es.html?ss=Habitat+Apartments+Boulevard+%2F+Tetuan+barcelona&checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "trivago_url": "https://www.trivago.es/es-ES/srl/alojamiento-barcelona?search=100-200;dr-20270911-20270913;rc-1-7",
+        "link_type": "Apartamento Entero (3 Dorms / 1 por Célula) · Con Ascensor (Cota Cero)",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 2.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 430.0,
+          "total_stay_eur": 860.0,
+          "cost_person_night_8": 53.75,
+          "cost_person_night_9": 47.78,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 155.0,
+          "total_savings_stay_eur": 310.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": true,
+          "crib_status": "Cuna disponible GRATIS",
+          "family_amenities": [
+            "trona"
+          ],
+          "baby_score": 9.5,
+          "notes": "En Booking se confirma cuna en el paso de reserva."
+        },
+        "location": {
+          "location_score": 9.5,
+          "strategic_highlights": [
+            "Eixample (la zona más segura y llana)"
+          ],
+          "transit_proximity": "Metro Tetuan (L2) a 140 m y Girona (L4) a 280 m"
+        }
+      },
+      {
+        "id": "bcn_a_1",
+        "platform": "airbnb",
+        "name": "Luminoso Ático Modernista en Eixample Dret con Gran Terraza (3 Dorms)",
+        "city_id": "barcelona",
+        "property_type": "Apartamento entero privado (3 dormitorios amplios)",
+        "neighborhood": "Eixample Dret",
+        "address": "Carrer d'Aragó / Girona, Eixample, Barcelona",
+        "price_per_night_eur": 380.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 2.5,
+        "rating": 4.96,
+        "review_count": 142,
+        "transit_proximity": "Metro Girona (L4) a 150 m y Passeig de Gràcia a 450 m",
+        "amenities": [
+          "Cocina completa",
+          "Cuna de viaje gratis",
+          "Trona",
+          "Terraza privada",
+          "Ascensor moderno",
+          "AC",
+          "Lavadora/Secadora"
+        ],
+        "baby_notes": "Superhost con kit bebé incluido: cuna, trona, cambiador y protectores de enchufes. 1 habitación por célula.",
+        "search_term": "Eixample Dret Barcelona",
+        "url": "https://www.airbnb.es/s/Eixample+Dret+Barcelona/homes?checkin=2027-09-11&checkout=2027-09-13&adults=7&children=1&infants=1&min_bedrooms=3&room_types%5B%5D=Entire+home%2Fapt&price_max=585",
+        "elevator_status": "Con Ascensor",
+        "link_type": "Airbnb Entero (3 Dorms / 1 por Célula) · Con Ascensor",
+        "privacy": "100% Privado (Alojamiento entero de uso exclusivo sin extraños)",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 2.5,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 380.0,
+          "total_stay_eur": 760.0,
+          "cost_person_night_8": 47.5,
+          "cost_person_night_9": 42.22,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 205.0,
+          "total_savings_stay_eur": 410.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": true,
+          "crib_status": "Cuna disponible GRATIS",
+          "family_amenities": [
+            "trona"
+          ],
+          "baby_score": 9.5,
+          "notes": "Airbnb no cobra tarifa adicional por bebés (< 2 años)."
+        },
+        "location": {
+          "location_score": 9.5,
+          "strategic_highlights": [
+            "Eixample (la zona más segura y llana)"
+          ],
+          "transit_proximity": "Metro Girona (L4) a 150 m y Passeig de Gràcia a 450 m"
+        }
+      },
+      {
+        "id": "bcn_b_ericvokel",
+        "platform": "booking",
+        "name": "Eric Vökel Boutique Apartments - Gran Vía Suites (Apartamento 3 Dorms)",
+        "city_id": "barcelona",
+        "property_type": "Apartahotel boutique (Suite familiar de 3 dormitorios privados)",
+        "neighborhood": "Eixample Esquerra",
+        "address": "Gran Via de les Corts Catalanes 454, Barcelona",
+        "price_per_night_eur": 465.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 2.0,
+        "rating": 9.1,
+        "review_count": 1450,
+        "no_rooms": 1,
+        "privacy": "100% Privado (Apartamento familiar en apartahotel con recepción)",
+        "elevator_status": "Con Ascensor (Moderno)",
+        "transit_proximity": "Metro Rocafort (L1) a 160 m y Plaza España a 650 m",
+        "amenities": [
+          "Cocina equipada",
+          "Recepción y guardaequipaje",
+          "Cuna gratis",
+          "Ascensor moderno",
+          "AC"
+        ],
+        "baby_notes": "Recepción para dejar las 3 maletas de 23kg antes del check-in. Cuna gratis garantizada.",
+        "hotel_slug": "eric-vokel-gran-via-suites",
+        "country_code": "es",
+        "multiplatform": {
+          "google_hotels": "https://www.google.com/travel/hotels?q=Eric+V%C3%B6kel+Boutique+Apartments+-+Gran+V%C3%ADa+Suites+barcelona&dates=2027-09-11,2027-09-13&adults=7&hl=es",
+          "booking_direct": "https://www.booking.com/hotel/es/eric-vokel-gran-via-suites.es.html",
+          "booking_with_dates": "https://www.booking.com/hotel/es/eric-vokel-gran-via-suites.es.html?checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "booking_search_prop": "https://www.booking.com/searchresults.es.html?ss=Eric+V%C3%B6kel+Boutique+Apartments+-+Gran+V%C3%ADa+Suites+barcelona&checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "trivago": "https://www.trivago.es/es-ES/srl/alojamiento-barcelona?search=100-200;dr-20270911-20270913;rc-1-7",
+          "official_web": ""
+        },
+        "url": "https://www.booking.com/hotel/es/eric-vokel-gran-via-suites.es.html?checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "google_hotels_url": "https://www.google.com/travel/hotels?q=Eric+V%C3%B6kel+Boutique+Apartments+-+Gran+V%C3%ADa+Suites+barcelona&dates=2027-09-11,2027-09-13&adults=7&hl=es",
+        "booking_url": "https://www.booking.com/hotel/es/eric-vokel-gran-via-suites.es.html",
+        "booking_dates_url": "https://www.booking.com/hotel/es/eric-vokel-gran-via-suites.es.html?checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "booking_search_prop_url": "https://www.booking.com/searchresults.es.html?ss=Eric+V%C3%B6kel+Boutique+Apartments+-+Gran+V%C3%ADa+Suites+barcelona&checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "trivago_url": "https://www.trivago.es/es-ES/srl/alojamiento-barcelona?search=100-200;dr-20270911-20270913;rc-1-7",
+        "link_type": "Apartamento Entero (3 Dorms / 1 por Célula) · Con Ascensor (Moderno)",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 2.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 465.0,
+          "total_stay_eur": 930.0,
+          "cost_person_night_8": 58.12,
+          "cost_person_night_9": 51.67,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 120.0,
+          "total_savings_stay_eur": 240.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": true,
+          "crib_status": "Cuna disponible GRATIS",
+          "family_amenities": [],
+          "baby_score": 9.0,
+          "notes": "En Booking se confirma cuna en el paso de reserva."
+        },
+        "location": {
+          "location_score": 9.5,
+          "strategic_highlights": [
+            "Eixample (la zona más segura y llana)"
+          ],
+          "transit_proximity": "Metro Rocafort (L1) a 160 m y Plaza España a 650 m"
+        }
+      },
+      {
+        "id": "bcn_b_sagrada_apt",
+        "platform": "booking",
+        "name": "Sagrada Familia Classic Family Residence (Apartamento 3 Dorms)",
+        "city_id": "barcelona",
+        "property_type": "Apartamento familiar entero (3 dormitorios + 2 baños)",
+        "neighborhood": "Eixample / Sagrada Família",
+        "address": "Carrer de Mallorca / Padilla, Barcelona",
+        "price_per_night_eur": 420.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 2.0,
+        "rating": 8.8,
+        "review_count": 620,
+        "no_rooms": 1,
+        "privacy": "100% Privado (Apartamento entero sin extraños)",
+        "elevator_status": "Con Ascensor",
+        "transit_proximity": "Metro Sagrada Família (L2/L5) a 220 m",
+        "amenities": [
+          "Cocina completa",
+          "Cuna gratis",
+          "Ascensor",
+          "Lavadora",
+          "Balcón con vistas"
+        ],
+        "baby_notes": "A 3 minutos caminando de la Sagrada Familia y plazas con juegos infantiles.",
+        "hotel_slug": "apartaments-sagrada-familia",
+        "country_code": "es",
+        "multiplatform": {
+          "google_hotels": "https://www.google.com/travel/hotels?q=Sagrada+Familia+Classic+Family+Residence+barcelona&dates=2027-09-11,2027-09-13&adults=7&hl=es",
+          "booking_direct": "https://www.booking.com/hotel/es/apartaments-sagrada-familia.es.html",
+          "booking_with_dates": "https://www.booking.com/hotel/es/apartaments-sagrada-familia.es.html?checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "booking_search_prop": "https://www.booking.com/searchresults.es.html?ss=Sagrada+Familia+Classic+Family+Residence+barcelona&checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "trivago": "https://www.trivago.es/es-ES/srl/alojamiento-barcelona?search=100-200;dr-20270911-20270913;rc-1-7",
+          "official_web": ""
+        },
+        "url": "https://www.booking.com/hotel/es/apartaments-sagrada-familia.es.html?checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "google_hotels_url": "https://www.google.com/travel/hotels?q=Sagrada+Familia+Classic+Family+Residence+barcelona&dates=2027-09-11,2027-09-13&adults=7&hl=es",
+        "booking_url": "https://www.booking.com/hotel/es/apartaments-sagrada-familia.es.html",
+        "booking_dates_url": "https://www.booking.com/hotel/es/apartaments-sagrada-familia.es.html?checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "booking_search_prop_url": "https://www.booking.com/searchresults.es.html?ss=Sagrada+Familia+Classic+Family+Residence+barcelona&checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "trivago_url": "https://www.trivago.es/es-ES/srl/alojamiento-barcelona?search=100-200;dr-20270911-20270913;rc-1-7",
+        "link_type": "Apartamento Entero (3 Dorms / 1 por Célula) · Con Ascensor",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 2.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 420.0,
+          "total_stay_eur": 840.0,
+          "cost_person_night_8": 52.5,
+          "cost_person_night_9": 46.67,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 165.0,
+          "total_savings_stay_eur": 330.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": true,
+          "crib_status": "Cuna disponible GRATIS",
+          "family_amenities": [],
+          "baby_score": 9.0,
+          "notes": "En Booking se confirma cuna en el paso de reserva."
+        },
+        "location": {
+          "location_score": 9.5,
+          "strategic_highlights": [
+            "Eixample (la zona más segura y llana)"
+          ],
+          "transit_proximity": "Metro Sagrada Família (L2/L5) a 220 m"
+        }
+      },
+      {
+        "id": "bcn_a_2",
+        "platform": "airbnb",
+        "name": "Gran Residencia Familiar con Patio Jardín en Eixample Esquerra (3 Dorms)",
+        "city_id": "barcelona",
+        "property_type": "Planta baja señorial con jardín privado (3 dormitorios)",
+        "neighborhood": "Eixample Esquerra",
+        "address": "Carrer de Mallorca / Villarroel, Barcelona",
+        "price_per_night_eur": 410.0,
+        "max_guests": 10,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 2.5,
+        "rating": 4.94,
+        "review_count": 98,
+        "transit_proximity": "Metro Hospital Clínic (L5) a 200 m y Urgell (L1) a 350 m",
+        "amenities": [
+          "Cocina espaciosa",
+          "Cuna plegable",
+          "Trona infantil",
+          "Patio cerrado para niños",
+          "AC",
+          "Lavavajillas"
+        ],
+        "baby_notes": "Patio interior privado seguro a cota cero donde Santiago y Sofía pueden jugar sin peligro.",
+        "search_term": "Eixample Esquerra Barcelona",
+        "url": "https://www.airbnb.es/s/Eixample+Esquerra+Barcelona/homes?checkin=2027-09-11&checkout=2027-09-13&adults=7&children=1&infants=1&min_bedrooms=3&room_types%5B%5D=Entire+home%2Fapt&price_max=585",
+        "elevator_status": "Sin Ascensor Necesario (Planta Baja / Cero Escaleras)",
+        "link_type": "Airbnb Entero (3 Dorms / 1 por Célula) · Sin Ascensor Necesario (Planta Baja / Cero Escaleras)",
+        "privacy": "100% Privado (Alojamiento entero de uso exclusivo sin extraños)",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 10,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 2.5,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Muy espacioso (hasta 10 huéspedes)"
+        },
+        "pricing": {
+          "price_per_night_eur": 410.0,
+          "total_stay_eur": 820.0,
+          "cost_person_night_8": 51.25,
+          "cost_person_night_9": 45.56,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 175.0,
+          "total_savings_stay_eur": 350.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": false,
+          "crib_status": "Cuna disponible (consultar suplemento/a petición)",
+          "family_amenities": [
+            "trona"
+          ],
+          "baby_score": 8.5,
+          "notes": "Airbnb no cobra tarifa adicional por bebés (< 2 años)."
+        },
+        "location": {
+          "location_score": 9.5,
+          "strategic_highlights": [
+            "Eixample (la zona más segura y llana)"
+          ],
+          "transit_proximity": "Metro Hospital Clínic (L5) a 200 m y Urgell (L1) a 350 m"
+        }
+      },
+      {
+        "id": "bcn_b_walkup_1",
+        "platform": "booking",
+        "name": "Aspasios Gran Vía Suites Modernista (1er Piso Sin Ascensor - Gran Ahorro)",
+        "city_id": "barcelona",
+        "property_type": "Apartamento modernista señorial (3 dormitorios + estudio, techos altos)",
+        "neighborhood": "Eixample Dret",
+        "address": "Gran Via de les Corts Catalanes / Balmes, Barcelona",
+        "price_per_night_eur": 360.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 2.0,
+        "rating": 9.0,
+        "review_count": 420,
+        "no_rooms": 1,
+        "privacy": "100% Privado (Uso exclusivo del grupo completo sin extraños)",
+        "elevator_status": "Sin Ascensor (1er Piso Real / 18 escalones anchos)",
+        "transit_proximity": "Metro Passeig de Gràcia (L2/L3/L4) a 250 m y Universitat a 300 m",
+        "amenities": [
+          "Cocina completa",
+          "Cuna disponible",
+          "Balcones modernistas",
+          "Lavadora",
+          "AC"
+        ],
+        "baby_notes": "Planta Principal con escalones anchos. Permite dejar cochecito plegado o subir 1 tramo corto. Ahorro de €70/noche.",
+        "hotel_slug": "aspasios-gran-via-suites",
+        "country_code": "es",
+        "multiplatform": {
+          "google_hotels": "https://www.google.com/travel/hotels?q=Aspasios+Gran+V%C3%ADa+Suites+Modernista+barcelona&dates=2027-09-11,2027-09-13&adults=7&hl=es",
+          "booking_direct": "https://www.booking.com/hotel/es/aspasios-gran-via-suites.es.html",
+          "booking_with_dates": "https://www.booking.com/hotel/es/aspasios-gran-via-suites.es.html?checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "booking_search_prop": "https://www.booking.com/searchresults.es.html?ss=Aspasios+Gran+V%C3%ADa+Suites+Modernista+barcelona&checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "trivago": "https://www.trivago.es/es-ES/srl/alojamiento-barcelona?search=100-200;dr-20270911-20270913;rc-1-7",
+          "official_web": ""
+        },
+        "url": "https://www.booking.com/hotel/es/aspasios-gran-via-suites.es.html?checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "google_hotels_url": "https://www.google.com/travel/hotels?q=Aspasios+Gran+V%C3%ADa+Suites+Modernista+barcelona&dates=2027-09-11,2027-09-13&adults=7&hl=es",
+        "booking_url": "https://www.booking.com/hotel/es/aspasios-gran-via-suites.es.html",
+        "booking_dates_url": "https://www.booking.com/hotel/es/aspasios-gran-via-suites.es.html?checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "booking_search_prop_url": "https://www.booking.com/searchresults.es.html?ss=Aspasios+Gran+V%C3%ADa+Suites+Modernista+barcelona&checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "trivago_url": "https://www.trivago.es/es-ES/srl/alojamiento-barcelona?search=100-200;dr-20270911-20270913;rc-1-7",
+        "link_type": "Apartamento Entero (3 Dorms / 1 por Célula) · Sin Ascensor (1er Piso Real / 18 escalones anchos)",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 2.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 360.0,
+          "total_stay_eur": 720.0,
+          "cost_person_night_8": 45.0,
+          "cost_person_night_9": 40.0,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 225.0,
+          "total_savings_stay_eur": 450.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": false,
+          "crib_status": "Cuna disponible (consultar suplemento/a petición)",
+          "family_amenities": [],
+          "baby_score": 8.0,
+          "notes": "En Booking se confirma cuna en el paso de reserva."
+        },
+        "location": {
+          "location_score": 9.5,
+          "strategic_highlights": [
+            "Eixample (la zona más segura y llana)"
+          ],
+          "transit_proximity": "Metro Passeig de Gràcia (L2/L3/L4) a 250 m y Universitat a 300 m"
+        }
+      },
+      {
+        "id": "bcn_b_catalonia",
+        "platform": "booking",
+        "name": "Hotel Catalonia Sagrada Família (Opción Hotel: 3 Habs Privadas)",
+        "city_id": "barcelona",
+        "property_type": "Hotel 3 estrellas superior (3 habitaciones privadas, 1 por célula)",
+        "neighborhood": "Sagrada Família / Eixample",
+        "address": "Carrer d'Aragó 568, Barcelona",
+        "price_per_night_eur": 450.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 3.0,
+        "rating": 8.7,
+        "review_count": 3100,
+        "no_rooms": 3,
+        "privacy": "100% Privado (3 habitaciones privadas independientes con baño en suite)",
+        "elevator_status": "Con Ascensor (Recepción 24h)",
+        "transit_proximity": "Metro Clot (L1/L2) a 180 m y Sagrada Família a 900 m",
+        "amenities": [
+          "Desayuno buffet disponible",
+          "Baño privado en cada habitación",
+          "Cuna sin costo",
+          "Recepción 24h",
+          "Ascensor"
+        ],
+        "baby_notes": "1 habitación doble + cuna (Célula 1), 1 triple familiar (Célula 2) y 1 triple adultos (Célula 3).",
+        "hotel_slug": "catalonia-sagrada-familia",
+        "country_code": "es",
+        "multiplatform": {
+          "google_hotels": "https://www.google.com/travel/hotels?q=Hotel+Catalonia+Sagrada+Fam%C3%ADlia+barcelona&dates=2027-09-11,2027-09-13&adults=7&hl=es",
+          "booking_direct": "https://www.booking.com/hotel/es/catalonia-sagrada-familia.es.html",
+          "booking_with_dates": "https://www.booking.com/hotel/es/catalonia-sagrada-familia.es.html?checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+          "booking_search_prop": "https://www.booking.com/searchresults.es.html?ss=Hotel+Catalonia+Sagrada+Fam%C3%ADlia+barcelona&checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+          "trivago": "https://www.trivago.es/es-ES/srl/alojamiento-barcelona?search=100-200;dr-20270911-20270913;rc-1-7",
+          "official_web": ""
+        },
+        "url": "https://www.booking.com/hotel/es/catalonia-sagrada-familia.es.html?checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+        "google_hotels_url": "https://www.google.com/travel/hotels?q=Hotel+Catalonia+Sagrada+Fam%C3%ADlia+barcelona&dates=2027-09-11,2027-09-13&adults=7&hl=es",
+        "booking_url": "https://www.booking.com/hotel/es/catalonia-sagrada-familia.es.html",
+        "booking_dates_url": "https://www.booking.com/hotel/es/catalonia-sagrada-familia.es.html?checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+        "booking_search_prop_url": "https://www.booking.com/searchresults.es.html?ss=Hotel+Catalonia+Sagrada+Fam%C3%ADlia+barcelona&checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+        "trivago_url": "https://www.trivago.es/es-ES/srl/alojamiento-barcelona?search=100-200;dr-20270911-20270913;rc-1-7",
+        "link_type": "Hotel Familiar (3 Habs Privadas / 1 por Célula) · Con Ascensor (Recepción 24h)",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 3.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 450.0,
+          "total_stay_eur": 900.0,
+          "cost_person_night_8": 56.25,
+          "cost_person_night_9": 50.0,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 135.0,
+          "total_savings_stay_eur": 270.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": false,
+          "crib_status": "Cuna disponible (consultar suplemento/a petición)",
+          "family_amenities": [],
+          "baby_score": 8.0,
+          "notes": "En Booking se confirma cuna en el paso de reserva."
+        },
+        "location": {
+          "location_score": 9.5,
+          "strategic_highlights": [
+            "Eixample (la zona más segura y llana)"
+          ],
+          "transit_proximity": "Metro Clot (L1/L2) a 180 m y Sagrada Família a 900 m"
+        }
+      },
+      {
+        "id": "bcn_a_3",
+        "platform": "airbnb",
+        "name": "Elegante Piso Señorial en Rambla Catalunya & Eixample (3 Dorms)",
+        "city_id": "barcelona",
+        "property_type": "Apartamento noble de techos altos (3 dormitorios + estudio)",
+        "neighborhood": "Eixample / Rambla de Catalunya",
+        "address": "Rambla de Catalunya, Eixample, Barcelona",
+        "price_per_night_eur": 445.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 2.0,
+        "rating": 4.91,
+        "review_count": 210,
+        "transit_proximity": "Metro Diagonal (L3/L5) a 140 m",
+        "amenities": [
+          "Cocina de diseño",
+          "Cuna disponible",
+          "Ascensor señorial",
+          "Balcones al bulevar",
+          "AC"
+        ],
+        "baby_notes": "Bulevar peatonal arbolado con terrazas familiares y áreas de juego infantil.",
+        "search_term": "Rambla de Catalunya Barcelona",
+        "url": "https://www.airbnb.es/s/Rambla+de+Catalunya+Barcelona/homes?checkin=2027-09-11&checkout=2027-09-13&adults=7&children=1&infants=1&min_bedrooms=3&room_types%5B%5D=Entire+home%2Fapt&price_max=585",
+        "elevator_status": "Con Ascensor",
+        "link_type": "Airbnb Entero (3 Dorms / 1 por Célula) · Con Ascensor",
+        "privacy": "100% Privado (Alojamiento entero de uso exclusivo sin extraños)",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 2.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 445.0,
+          "total_stay_eur": 890.0,
+          "cost_person_night_8": 55.62,
+          "cost_person_night_9": 49.44,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 140.0,
+          "total_savings_stay_eur": 280.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": false,
+          "crib_status": "Cuna disponible (consultar suplemento/a petición)",
+          "family_amenities": [],
+          "baby_score": 8.0,
+          "notes": "Airbnb no cobra tarifa adicional por bebés (< 2 años)."
+        },
+        "location": {
+          "location_score": 9.5,
+          "strategic_highlights": [
+            "Eixample (la zona más segura y llana)"
+          ],
+          "transit_proximity": "Metro Diagonal (L3/L5) a 140 m"
+        }
+      }
+    ],
+    "paris": [
+      {
+        "id": "par_a_1",
+        "platform": "airbnb",
+        "name": "Spacieux Appartement Haussmannien Jardin du Luxembourg (3 Dorms)",
+        "city_id": "paris",
+        "property_type": "Apartamento haussmanniano familiar (3 dormitorios amplios)",
+        "neighborhood": "Distrito 6 (Saint-Germain / Luxembourg)",
+        "address": "Boulevard Saint-Michel, 6e arr., París",
+        "price_per_night_eur": 550.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 2.5,
+        "rating": 4.95,
+        "review_count": 115,
+        "transit_proximity": "RER B Luxembourg a 180 m y Metro Odéon a 350 m",
+        "amenities": [
+          "Cocina de chef",
+          "Cuna gratis",
+          "Trona",
+          "Ascensor grande",
+          "Lavadora/Secadora"
+        ],
+        "baby_notes": "A 2 minutos del Jardin du Luxembourg (carruseles y áreas infantiles). Cuna y trona incluidas.",
+        "search_term": "Saint-Germain-des-Prés Paris",
+        "url": "https://www.airbnb.es/s/Saint-Germain-des-Pr%C3%A9s+Paris/homes?checkin=2027-09-13&checkout=2027-09-17&adults=7&children=1&infants=1&min_bedrooms=3&room_types%5B%5D=Entire+home%2Fapt&price_max=585",
+        "elevator_status": "Con Ascensor",
+        "link_type": "Airbnb Entero (3 Dorms / 1 por Célula) · Con Ascensor",
+        "privacy": "100% Privado (Alojamiento entero de uso exclusivo sin extraños)",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 2.5,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 550.0,
+          "total_stay_eur": 2200.0,
+          "cost_person_night_8": 68.75,
+          "cost_person_night_9": 61.11,
+          "within_budget_8": false,
+          "within_budget_9": true,
+          "savings_per_night_eur": 35.0,
+          "total_savings_stay_eur": 140.0,
+          "budget_status": "Excede presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": true,
+          "crib_status": "Cuna disponible GRATIS",
+          "family_amenities": [
+            "trona"
+          ],
+          "baby_score": 9.5,
+          "notes": "Airbnb no cobra tarifa adicional por bebés (< 2 años)."
+        },
+        "location": {
+          "location_score": 9.5,
+          "strategic_highlights": [
+            "Distrito residencial seguro y familiar"
+          ],
+          "transit_proximity": "RER B Luxembourg a 180 m y Metro Odéon a 350 m"
+        }
+      },
+      {
+        "id": "par_b_1",
+        "platform": "booking",
+        "name": "Citadines Bastille Gare de Lyon Paris (3 Estudios/Suites Familiares)",
+        "city_id": "paris",
+        "property_type": "Apartahotel (3 unidades privadas con cocina, 1 por célula)",
+        "neighborhood": "Distrito 11 / 12 (Bastille - Gare de Lyon)",
+        "address": "14-18 Rue de Chaligny, 12e arr., París",
+        "price_per_night_eur": 540.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 3.0,
+        "rating": 8.7,
+        "review_count": 2100,
+        "no_rooms": 3,
+        "privacy": "100% Privado (1 apartamento/estudio privado con baño y cocina por célula)",
+        "elevator_status": "Con Ascensor (Grande)",
+        "transit_proximity": "Metro Reuilly-Diderot (L1/L8) a 150 m y Gare de Lyon (RER A directo a Disney y TGV a Zúrich) a 600 m",
+        "amenities": [
+          "Kitchenette en cada unidad",
+          "Cuna gratis",
+          "Recepción 24h",
+          "Ascensor amplio",
+          "Guardaequipaje"
+        ],
+        "baby_notes": "Ubicación estratégica: línea RER A directa a Disneyland y salida a pie al TGV Lyria hacia Zúrich.",
+        "hotel_slug": "citadines-bastille-gare-de-lyon-paris",
+        "country_code": "fr",
+        "multiplatform": {
+          "google_hotels": "https://www.google.com/travel/hotels?q=Citadines+Bastille+Gare+de+Lyon+Paris+paris&dates=2027-09-13,2027-09-17&adults=7&hl=es",
+          "booking_direct": "https://www.booking.com/hotel/fr/citadines-bastille-gare-de-lyon-paris.es.html",
+          "booking_with_dates": "https://www.booking.com/hotel/fr/citadines-bastille-gare-de-lyon-paris.es.html?checkin=2027-09-13&checkout=2027-09-17&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+          "booking_search_prop": "https://www.booking.com/searchresults.es.html?ss=Citadines+Bastille+Gare+de+Lyon+Paris+paris&checkin=2027-09-13&checkout=2027-09-17&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+          "trivago": "https://www.trivago.es/es-ES/srl/alojamiento-paris?search=100-200;dr-20270913-20270917;rc-1-7",
+          "official_web": ""
+        },
+        "url": "https://www.booking.com/hotel/fr/citadines-bastille-gare-de-lyon-paris.es.html?checkin=2027-09-13&checkout=2027-09-17&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+        "google_hotels_url": "https://www.google.com/travel/hotels?q=Citadines+Bastille+Gare+de+Lyon+Paris+paris&dates=2027-09-13,2027-09-17&adults=7&hl=es",
+        "booking_url": "https://www.booking.com/hotel/fr/citadines-bastille-gare-de-lyon-paris.es.html",
+        "booking_dates_url": "https://www.booking.com/hotel/fr/citadines-bastille-gare-de-lyon-paris.es.html?checkin=2027-09-13&checkout=2027-09-17&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+        "booking_search_prop_url": "https://www.booking.com/searchresults.es.html?ss=Citadines+Bastille+Gare+de+Lyon+Paris+paris&checkin=2027-09-13&checkout=2027-09-17&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+        "trivago_url": "https://www.trivago.es/es-ES/srl/alojamiento-paris?search=100-200;dr-20270913-20270917;rc-1-7",
+        "link_type": "Hotel Familiar (3 Habs Privadas / 1 por Célula) · Con Ascensor (Grande)",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 3.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 540.0,
+          "total_stay_eur": 2160.0,
+          "cost_person_night_8": 67.5,
+          "cost_person_night_9": 60.0,
+          "within_budget_8": false,
+          "within_budget_9": true,
+          "savings_per_night_eur": 45.0,
+          "total_savings_stay_eur": 180.0,
+          "budget_status": "Excede presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": true,
+          "crib_status": "Cuna disponible GRATIS",
+          "family_amenities": [],
+          "baby_score": 9.0,
+          "notes": "En Booking se confirma cuna en el paso de reserva."
+        },
+        "location": {
+          "location_score": 7.0,
+          "strategic_highlights": [
+            "Ubicación estratégica con acceso a transporte"
+          ],
+          "transit_proximity": "Metro Reuilly-Diderot (L1/L8) a 150 m y Gare de Lyon (RER A directo a Disney y TGV a Zúrich) a 600 m"
+        }
+      },
+      {
+        "id": "par_b_3",
+        "platform": "booking",
+        "name": "Aparthotel Adagio Paris Centre / Bercy (Opción 3 Habitaciones/Estudios Privados)",
+        "city_id": "paris",
+        "property_type": "Apartahotel familiar 4 estrellas (3 unidades privadas con baño en suite)",
+        "neighborhood": "Distrito 12 (Bercy Village / Gare de Lyon)",
+        "address": "1-7 Cour du Minervois, 12e arr., París",
+        "price_per_night_eur": 520.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 3.0,
+        "rating": 8.6,
+        "review_count": 2450,
+        "no_rooms": 3,
+        "privacy": "100% Privado (3 estudios/suites independientes, 1 por célula familiar)",
+        "elevator_status": "Con Ascensor (Cota Cero)",
+        "transit_proximity": "Metro Cour Saint-Émilion (L14 ultrarrápida y accesible) a 120 m",
+        "amenities": [
+          "Recepción 24h",
+          "Cocina en cada habitación",
+          "Cuna gratis",
+          "Ascensor amplio",
+          "Parque Bercy al lado"
+        ],
+        "baby_notes": "Línea 14 de metro 100% accesible con ascensores en todas las estaciones para el cochecito de Santiago.",
+        "hotel_slug": "aparthotel-adagio-paris-bercy-village",
+        "country_code": "fr",
+        "multiplatform": {
+          "google_hotels": "https://www.google.com/travel/hotels?q=Aparthotel+Adagio+Paris+Centre+%2F+Bercy+paris&dates=2027-09-13,2027-09-17&adults=7&hl=es",
+          "booking_direct": "https://www.booking.com/hotel/fr/aparthotel-adagio-paris-bercy-village.es.html",
+          "booking_with_dates": "https://www.booking.com/hotel/fr/aparthotel-adagio-paris-bercy-village.es.html?checkin=2027-09-13&checkout=2027-09-17&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+          "booking_search_prop": "https://www.booking.com/searchresults.es.html?ss=Aparthotel+Adagio+Paris+Centre+%2F+Bercy+paris&checkin=2027-09-13&checkout=2027-09-17&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+          "trivago": "https://www.trivago.es/es-ES/srl/alojamiento-paris?search=100-200;dr-20270913-20270917;rc-1-7",
+          "official_web": ""
+        },
+        "url": "https://www.booking.com/hotel/fr/aparthotel-adagio-paris-bercy-village.es.html?checkin=2027-09-13&checkout=2027-09-17&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+        "google_hotels_url": "https://www.google.com/travel/hotels?q=Aparthotel+Adagio+Paris+Centre+%2F+Bercy+paris&dates=2027-09-13,2027-09-17&adults=7&hl=es",
+        "booking_url": "https://www.booking.com/hotel/fr/aparthotel-adagio-paris-bercy-village.es.html",
+        "booking_dates_url": "https://www.booking.com/hotel/fr/aparthotel-adagio-paris-bercy-village.es.html?checkin=2027-09-13&checkout=2027-09-17&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+        "booking_search_prop_url": "https://www.booking.com/searchresults.es.html?ss=Aparthotel+Adagio+Paris+Centre+%2F+Bercy+paris&checkin=2027-09-13&checkout=2027-09-17&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+        "trivago_url": "https://www.trivago.es/es-ES/srl/alojamiento-paris?search=100-200;dr-20270913-20270917;rc-1-7",
+        "link_type": "Hotel Familiar (3 Habs Privadas / 1 por Célula) · Con Ascensor (Cota Cero)",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 3.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 520.0,
+          "total_stay_eur": 2080.0,
+          "cost_person_night_8": 65.0,
+          "cost_person_night_9": 57.78,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 65.0,
+          "total_savings_stay_eur": 260.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": true,
+          "crib_status": "Cuna disponible GRATIS",
+          "family_amenities": [],
+          "baby_score": 9.0,
+          "notes": "En Booking se confirma cuna en el paso de reserva."
+        },
+        "location": {
+          "location_score": 7.0,
+          "strategic_highlights": [
+            "Ubicación estratégica con acceso a transporte"
+          ],
+          "transit_proximity": "Metro Cour Saint-Émilion (L14 ultrarrápida y accesible) a 120 m"
+        }
+      },
+      {
+        "id": "par_a_3",
+        "platform": "airbnb",
+        "name": "Grand Duplex Paisible et Lumineux près de Bastille / Gare de Lyon (3 Dorms)",
+        "city_id": "paris",
+        "property_type": "Dúplex residencial familiar (3 dormitorios grandes)",
+        "neighborhood": "Distrito 11 / 12 (Bastille - Gare de Lyon)",
+        "address": "Rue de Lyon / Bastille, París",
+        "price_per_night_eur": 495.0,
+        "max_guests": 10,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 2.0,
+        "rating": 4.9,
+        "review_count": 160,
+        "transit_proximity": "Metro Bastille (L1/L5/L8) y Gare de Lyon (RER A Disney + TGV Zúrich) a 300 m",
+        "amenities": [
+          "Cocina completa",
+          "Cuna de bebé",
+          "Trona",
+          "Bañera para bebés",
+          "Ascensor"
+        ],
+        "baby_notes": "Conexión directa en RER A a Disneyland Paris y a pasos del tren TGV Lyria hacia Suiza.",
+        "search_term": "Bastille Gare de Lyon Paris",
+        "url": "https://www.airbnb.es/s/Bastille+Gare+de+Lyon+Paris/homes?checkin=2027-09-13&checkout=2027-09-17&adults=7&children=1&infants=1&min_bedrooms=3&room_types%5B%5D=Entire+home%2Fapt&price_max=585",
+        "elevator_status": "Con Ascensor",
+        "link_type": "Airbnb Entero (3 Dorms / 1 por Célula) · Con Ascensor",
+        "privacy": "100% Privado (Alojamiento entero de uso exclusivo sin extraños)",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 10,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 2.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Muy espacioso (hasta 10 huéspedes)"
+        },
+        "pricing": {
+          "price_per_night_eur": 495.0,
+          "total_stay_eur": 1980.0,
+          "cost_person_night_8": 61.88,
+          "cost_person_night_9": 55.0,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 90.0,
+          "total_savings_stay_eur": 360.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": false,
+          "crib_status": "Cuna disponible (consultar suplemento/a petición)",
+          "family_amenities": [
+            "trona",
+            "bañera para bebés"
+          ],
+          "baby_score": 9.0,
+          "notes": "Airbnb no cobra tarifa adicional por bebés (< 2 años)."
+        },
+        "location": {
+          "location_score": 7.0,
+          "strategic_highlights": [
+            "Ubicación estratégica con acceso a transporte"
+          ],
+          "transit_proximity": "Metro Bastille (L1/L5/L8) y Gare de Lyon (RER A Disney + TGV Zúrich) a 300 m"
+        }
+      },
+      {
+        "id": "par_b_2",
+        "platform": "booking",
+        "name": "Résidence Monge Quartier Latin Grand Family (Apartamento Entero 3 Dorms)",
+        "city_id": "paris",
+        "property_type": "Apartamento familiar clásico parisino (3 dormitorios + salón)",
+        "neighborhood": "Distrito 5 (Barrio Latino)",
+        "address": "Rue Monge / Rue Gay-Lussac, 5e arr., París",
+        "price_per_night_eur": 560.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 2.0,
+        "rating": 9.1,
+        "review_count": 520,
+        "no_rooms": 1,
+        "privacy": "100% Privado (Uso exclusivo del apartamento completo)",
+        "elevator_status": "Con Ascensor",
+        "transit_proximity": "RER B Luxembourg a 220 m y Metro Place Monge (L7) a 150 m",
+        "amenities": [
+          "Cocina completa",
+          "Cuna de bebé",
+          "Trona",
+          "Lavadora",
+          "Patio interior silencioso"
+        ],
+        "baby_notes": "A 2 minutos a pie de los Jardines de Luxemburgo, con parques infantiles y sombra.",
+        "hotel_slug": "residence-monge-paris",
+        "country_code": "fr",
+        "multiplatform": {
+          "google_hotels": "https://www.google.com/travel/hotels?q=R%C3%A9sidence+Monge+Quartier+Latin+Grand+Family+paris&dates=2027-09-13,2027-09-17&adults=7&hl=es",
+          "booking_direct": "https://www.booking.com/hotel/fr/residence-monge-paris.es.html",
+          "booking_with_dates": "https://www.booking.com/hotel/fr/residence-monge-paris.es.html?checkin=2027-09-13&checkout=2027-09-17&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "booking_search_prop": "https://www.booking.com/searchresults.es.html?ss=R%C3%A9sidence+Monge+Quartier+Latin+Grand+Family+paris&checkin=2027-09-13&checkout=2027-09-17&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "trivago": "https://www.trivago.es/es-ES/srl/alojamiento-paris?search=100-200;dr-20270913-20270917;rc-1-7",
+          "official_web": ""
+        },
+        "url": "https://www.booking.com/hotel/fr/residence-monge-paris.es.html?checkin=2027-09-13&checkout=2027-09-17&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "google_hotels_url": "https://www.google.com/travel/hotels?q=R%C3%A9sidence+Monge+Quartier+Latin+Grand+Family+paris&dates=2027-09-13,2027-09-17&adults=7&hl=es",
+        "booking_url": "https://www.booking.com/hotel/fr/residence-monge-paris.es.html",
+        "booking_dates_url": "https://www.booking.com/hotel/fr/residence-monge-paris.es.html?checkin=2027-09-13&checkout=2027-09-17&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "booking_search_prop_url": "https://www.booking.com/searchresults.es.html?ss=R%C3%A9sidence+Monge+Quartier+Latin+Grand+Family+paris&checkin=2027-09-13&checkout=2027-09-17&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "trivago_url": "https://www.trivago.es/es-ES/srl/alojamiento-paris?search=100-200;dr-20270913-20270917;rc-1-7",
+        "link_type": "Apartamento Entero (3 Dorms / 1 por Célula) · Con Ascensor",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 2.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 560.0,
+          "total_stay_eur": 2240.0,
+          "cost_person_night_8": 70.0,
+          "cost_person_night_9": 62.22,
+          "within_budget_8": false,
+          "within_budget_9": true,
+          "savings_per_night_eur": 25.0,
+          "total_savings_stay_eur": 100.0,
+          "budget_status": "Excede presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": false,
+          "crib_status": "Cuna disponible (consultar suplemento/a petición)",
+          "family_amenities": [
+            "trona"
+          ],
+          "baby_score": 8.5,
+          "notes": "En Booking se confirma cuna en el paso de reserva."
+        },
+        "location": {
+          "location_score": 9.5,
+          "strategic_highlights": [
+            "Distrito residencial seguro y familiar"
+          ],
+          "transit_proximity": "RER B Luxembourg a 220 m y Metro Place Monge (L7) a 150 m"
+        }
+      },
+      {
+        "id": "par_b_walkup",
+        "platform": "booking",
+        "name": "Appartement Haussmannien Panthéon & Luxembourg (1er Étage Sin Ascensor - Ahorro)",
+        "city_id": "paris",
+        "property_type": "Apartamento parisino clásico (3 dormitorios grandes, suelo de roble)",
+        "neighborhood": "Distrito 5 (Barrio Latino / Panthéon)",
+        "address": "Rue Soufflot / Rue Saint-Jacques, 5e arr., París",
+        "price_per_night_eur": 440.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 2.0,
+        "rating": 9.0,
+        "review_count": 480,
+        "no_rooms": 1,
+        "privacy": "100% Privado (Apartamento completo señorial para las 3 células)",
+        "elevator_status": "Sin Ascensor (1er Piso Francés / 20 escalones de madera)",
+        "transit_proximity": "RER B Luxembourg a 180 m y Metro Cluny a 450 m",
+        "amenities": [
+          "Cocina completa",
+          "Cuna de viaje",
+          "Trona",
+          "Lavadora/Secadora",
+          "Salón amplio"
+        ],
+        "baby_notes": "Solo un tramo de escaleras anchas. Ahorro de ~€135/noche (€540 total en 4 noches) frente a opciones con ascensor.",
+        "hotel_slug": "residence-monge-paris",
+        "country_code": "fr",
+        "multiplatform": {
+          "google_hotels": "https://www.google.com/travel/hotels?q=Appartement+Haussmannien+Panth%C3%A9on+%26+Luxembourg+paris&dates=2027-09-13,2027-09-17&adults=7&hl=es",
+          "booking_direct": "https://www.booking.com/hotel/fr/residence-monge-paris.es.html",
+          "booking_with_dates": "https://www.booking.com/hotel/fr/residence-monge-paris.es.html?checkin=2027-09-13&checkout=2027-09-17&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "booking_search_prop": "https://www.booking.com/searchresults.es.html?ss=Appartement+Haussmannien+Panth%C3%A9on+%26+Luxembourg+paris&checkin=2027-09-13&checkout=2027-09-17&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "trivago": "https://www.trivago.es/es-ES/srl/alojamiento-paris?search=100-200;dr-20270913-20270917;rc-1-7",
+          "official_web": ""
+        },
+        "url": "https://www.booking.com/hotel/fr/residence-monge-paris.es.html?checkin=2027-09-13&checkout=2027-09-17&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "google_hotels_url": "https://www.google.com/travel/hotels?q=Appartement+Haussmannien+Panth%C3%A9on+%26+Luxembourg+paris&dates=2027-09-13,2027-09-17&adults=7&hl=es",
+        "booking_url": "https://www.booking.com/hotel/fr/residence-monge-paris.es.html",
+        "booking_dates_url": "https://www.booking.com/hotel/fr/residence-monge-paris.es.html?checkin=2027-09-13&checkout=2027-09-17&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "booking_search_prop_url": "https://www.booking.com/searchresults.es.html?ss=Appartement+Haussmannien+Panth%C3%A9on+%26+Luxembourg+paris&checkin=2027-09-13&checkout=2027-09-17&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "trivago_url": "https://www.trivago.es/es-ES/srl/alojamiento-paris?search=100-200;dr-20270913-20270917;rc-1-7",
+        "link_type": "Apartamento Entero (3 Dorms / 1 por Célula) · Sin Ascensor (1er Piso Francés / 20 escalones de madera)",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 2.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 440.0,
+          "total_stay_eur": 1760.0,
+          "cost_person_night_8": 55.0,
+          "cost_person_night_9": 48.89,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 145.0,
+          "total_savings_stay_eur": 580.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": false,
+          "crib_status": "Cuna disponible (consultar suplemento/a petición)",
+          "family_amenities": [
+            "trona"
+          ],
+          "baby_score": 8.5,
+          "notes": "En Booking se confirma cuna en el paso de reserva."
+        },
+        "location": {
+          "location_score": 9.5,
+          "strategic_highlights": [
+            "Distrito residencial seguro y familiar"
+          ],
+          "transit_proximity": "RER B Luxembourg a 180 m y Metro Cluny a 450 m"
+        }
+      },
+      {
+        "id": "par_a_2",
+        "platform": "airbnb",
+        "name": "Appartement de Caractère au Cœur du Quartier Latin (3 Dorms)",
+        "city_id": "paris",
+        "property_type": "Apartamento familiar con vigas vistas (3 dormitorios)",
+        "neighborhood": "Distrito 5 (Barrio Latino)",
+        "address": "Rue Monge, 5e arr., París",
+        "price_per_night_eur": 485.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 2.0,
+        "rating": 4.92,
+        "review_count": 87,
+        "transit_proximity": "Metro Cardinal Lemoine (L10) a 120 m y Place Monge (L7) a 200 m",
+        "amenities": [
+          "Cocina espaciosa",
+          "Cuna de viaje",
+          "Trona",
+          "Patio silencioso",
+          "Wifi fibra"
+        ],
+        "baby_notes": "Mercado tradicional al aire libre (Place Monge), panaderías y farmacias a pocos metros.",
+        "search_term": "Quartier Latin Paris",
+        "url": "https://www.airbnb.es/s/Quartier+Latin+Paris/homes?checkin=2027-09-13&checkout=2027-09-17&adults=7&children=1&infants=1&min_bedrooms=3&room_types%5B%5D=Entire+home%2Fapt&price_max=585",
+        "elevator_status": "Sin Ascensor (1er/2do Piso)",
+        "link_type": "Airbnb Entero (3 Dorms / 1 por Célula) · Sin Ascensor (1er/2do Piso)",
+        "privacy": "100% Privado (Alojamiento entero de uso exclusivo sin extraños)",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 2.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 485.0,
+          "total_stay_eur": 1940.0,
+          "cost_person_night_8": 60.62,
+          "cost_person_night_9": 53.89,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 100.0,
+          "total_savings_stay_eur": 400.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": false,
+          "crib_status": "Cuna disponible (consultar suplemento/a petición)",
+          "family_amenities": [
+            "trona"
+          ],
+          "baby_score": 8.5,
+          "notes": "Airbnb no cobra tarifa adicional por bebés (< 2 años)."
+        },
+        "location": {
+          "location_score": 9.5,
+          "strategic_highlights": [
+            "Distrito residencial seguro y familiar"
+          ],
+          "transit_proximity": "Metro Cardinal Lemoine (L10) a 120 m y Place Monge (L7) a 200 m"
+        }
+      }
+    ],
+    "zurich": [
+      {
+        "id": "zrh_b_1",
+        "platform": "booking",
+        "name": "Engimatt City & Garden Hotel / Residence Enge (3 Habitaciones / Suite Familiar)",
+        "city_id": "zurich",
+        "property_type": "Residencia/Hotel familiar 4 estrellas (3 habitaciones privadas)",
+        "neighborhood": "Enge / Kreis 2",
+        "address": "Gotthardstrasse 21, Enge, Zúrich",
+        "price_per_night_eur": 580.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 3.0,
+        "rating": 9.1,
+        "review_count": 880,
+        "no_rooms": 3,
+        "privacy": "100% Privado (1 habitación/suite privada por célula familiar)",
+        "elevator_status": "Con Ascensor (Moderno)",
+        "transit_proximity": "Parada de tranvía Museum Rietberg / Enge a 90 m; directo a Lindt y Zürich HB",
+        "amenities": [
+          "Jardín privado",
+          "Cuna gratis",
+          "Trona",
+          "Ascensor",
+          "Recepción 24h",
+          "Balcón"
+        ],
+        "baby_notes": "En el mismo distrito que el Museo Lindt Home of Chocolate y el Lago de Zúrich.",
+        "hotel_slug": "engimatt-city-garden",
+        "country_code": "ch",
+        "multiplatform": {
+          "google_hotels": "https://www.google.com/travel/hotels?q=Engimatt+City+%26+Garden+Hotel+%2F+Residence+Enge+zurich&dates=2027-09-17,2027-09-19&adults=7&hl=es",
+          "booking_direct": "https://www.booking.com/hotel/ch/engimatt-city-garden.es.html",
+          "booking_with_dates": "https://www.booking.com/hotel/ch/engimatt-city-garden.es.html?checkin=2027-09-17&checkout=2027-09-19&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+          "booking_search_prop": "https://www.booking.com/searchresults.es.html?ss=Engimatt+City+%26+Garden+Hotel+%2F+Residence+Enge+zurich&checkin=2027-09-17&checkout=2027-09-19&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+          "trivago": "https://www.trivago.es/es-ES/srl/alojamiento-zurich?search=100-200;dr-20270917-20270919;rc-1-7",
+          "official_web": ""
+        },
+        "url": "https://www.booking.com/hotel/ch/engimatt-city-garden.es.html?checkin=2027-09-17&checkout=2027-09-19&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+        "google_hotels_url": "https://www.google.com/travel/hotels?q=Engimatt+City+%26+Garden+Hotel+%2F+Residence+Enge+zurich&dates=2027-09-17,2027-09-19&adults=7&hl=es",
+        "booking_url": "https://www.booking.com/hotel/ch/engimatt-city-garden.es.html",
+        "booking_dates_url": "https://www.booking.com/hotel/ch/engimatt-city-garden.es.html?checkin=2027-09-17&checkout=2027-09-19&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+        "booking_search_prop_url": "https://www.booking.com/searchresults.es.html?ss=Engimatt+City+%26+Garden+Hotel+%2F+Residence+Enge+zurich&checkin=2027-09-17&checkout=2027-09-19&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+        "trivago_url": "https://www.trivago.es/es-ES/srl/alojamiento-zurich?search=100-200;dr-20270917-20270919;rc-1-7",
+        "link_type": "Hotel Familiar (3 Habs Privadas / 1 por Célula) · Con Ascensor (Moderno)",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 3.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 580.0,
+          "total_stay_eur": 1160.0,
+          "cost_person_night_8": 72.5,
+          "cost_person_night_9": 64.44,
+          "within_budget_8": false,
+          "within_budget_9": true,
+          "savings_per_night_eur": 5.0,
+          "total_savings_stay_eur": 10.0,
+          "budget_status": "Excede presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": true,
+          "crib_status": "Cuna disponible GRATIS",
+          "family_amenities": [
+            "trona"
+          ],
+          "baby_score": 9.5,
+          "notes": "En Booking se confirma cuna en el paso de reserva."
+        },
+        "location": {
+          "location_score": 9.0,
+          "strategic_highlights": [
+            "Barrio céntrico y súper seguro"
+          ],
+          "transit_proximity": "Parada de tranvía Museum Rietberg / Enge a 90 m; directo a Lindt y Zürich HB"
+        }
+      },
+      {
+        "id": "zrh_a_1",
+        "platform": "airbnb",
+        "name": "Modern Lake & City View Retreat in Zurich Enge (3 Dorms)",
+        "city_id": "zurich",
+        "property_type": "Apartamento suizo moderno (3 dormitorios amplios)",
+        "neighborhood": "Enge / Kreis 2",
+        "address": "Alfred Escher-Strasse, Enge, Zúrich",
+        "price_per_night_eur": 540.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 2.0,
+        "rating": 4.98,
+        "review_count": 64,
+        "transit_proximity": "Tranvía Bahnhof Enge a 90 m (5 min directos a Zürich HB y bus a Lindt)",
+        "amenities": [
+          "Cocina Miele",
+          "Cuna gratis",
+          "Trona",
+          "Balcón",
+          "Ascensor",
+          "Lavadora"
+        ],
+        "baby_notes": "A 350 m del paseo del lago de Zúrich y conexión directa a Kilchberg (Museo Lindt).",
+        "search_term": "Enge Zurich Switzerland",
+        "url": "https://www.airbnb.es/s/Enge+Zurich+Switzerland/homes?checkin=2027-09-17&checkout=2027-09-19&adults=7&children=1&infants=1&min_bedrooms=3&room_types%5B%5D=Entire+home%2Fapt&price_max=585",
+        "elevator_status": "Con Ascensor",
+        "link_type": "Airbnb Entero (3 Dorms / 1 por Célula) · Con Ascensor",
+        "privacy": "100% Privado (Alojamiento entero de uso exclusivo sin extraños)",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 2.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 540.0,
+          "total_stay_eur": 1080.0,
+          "cost_person_night_8": 67.5,
+          "cost_person_night_9": 60.0,
+          "within_budget_8": false,
+          "within_budget_9": true,
+          "savings_per_night_eur": 45.0,
+          "total_savings_stay_eur": 90.0,
+          "budget_status": "Excede presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": true,
+          "crib_status": "Cuna disponible GRATIS",
+          "family_amenities": [
+            "trona"
+          ],
+          "baby_score": 9.5,
+          "notes": "Airbnb no cobra tarifa adicional por bebés (< 2 años)."
+        },
+        "location": {
+          "location_score": 9.0,
+          "strategic_highlights": [
+            "Barrio céntrico y súper seguro"
+          ],
+          "transit_proximity": "Tranvía Bahnhof Enge a 90 m (5 min directos a Zürich HB y bus a Lindt)"
+        }
+      },
+      {
+        "id": "zrh_b_3",
+        "platform": "booking",
+        "name": "Hotel Montana Zürich HB (Opción Hotel: 3 Habitaciones Privadas)",
+        "city_id": "zurich",
+        "property_type": "Hotel 3 estrellas confort (3 habitaciones privadas con baño en suite)",
+        "neighborhood": "Kreis 1 (Altstadt / Zürich HB)",
+        "address": "Konradstrasse 39, Zúrich",
+        "price_per_night_eur": 575.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 3.0,
+        "rating": 8.5,
+        "review_count": 2200,
+        "no_rooms": 3,
+        "privacy": "100% Privado (3 habitaciones privadas independientes a pasos de Zürich HB)",
+        "elevator_status": "Con Ascensor",
+        "transit_proximity": "A 300 m llanos a pie de la Estación Central (Zürich HB)",
+        "amenities": [
+          "Desayuno buffet",
+          "Cuna gratis",
+          "Ascensor moderno",
+          "Insonorización triple vidrio"
+        ],
+        "baby_notes": "Ubicación inmejorable al bajar del TGV desde París y para tomar el tren hacia Italia: cero taxis necesarios.",
+        "hotel_slug": "montana-zurich",
+        "country_code": "ch",
+        "multiplatform": {
+          "google_hotels": "https://www.google.com/travel/hotels?q=Hotel+Montana+Z%C3%BCrich+HB+zurich&dates=2027-09-17,2027-09-19&adults=7&hl=es",
+          "booking_direct": "https://www.booking.com/hotel/ch/montana-zurich.es.html",
+          "booking_with_dates": "https://www.booking.com/hotel/ch/montana-zurich.es.html?checkin=2027-09-17&checkout=2027-09-19&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+          "booking_search_prop": "https://www.booking.com/searchresults.es.html?ss=Hotel+Montana+Z%C3%BCrich+HB+zurich&checkin=2027-09-17&checkout=2027-09-19&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+          "trivago": "https://www.trivago.es/es-ES/srl/alojamiento-zurich?search=100-200;dr-20270917-20270919;rc-1-7",
+          "official_web": ""
+        },
+        "url": "https://www.booking.com/hotel/ch/montana-zurich.es.html?checkin=2027-09-17&checkout=2027-09-19&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+        "google_hotels_url": "https://www.google.com/travel/hotels?q=Hotel+Montana+Z%C3%BCrich+HB+zurich&dates=2027-09-17,2027-09-19&adults=7&hl=es",
+        "booking_url": "https://www.booking.com/hotel/ch/montana-zurich.es.html",
+        "booking_dates_url": "https://www.booking.com/hotel/ch/montana-zurich.es.html?checkin=2027-09-17&checkout=2027-09-19&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+        "booking_search_prop_url": "https://www.booking.com/searchresults.es.html?ss=Hotel+Montana+Z%C3%BCrich+HB+zurich&checkin=2027-09-17&checkout=2027-09-19&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+        "trivago_url": "https://www.trivago.es/es-ES/srl/alojamiento-zurich?search=100-200;dr-20270917-20270919;rc-1-7",
+        "link_type": "Hotel Familiar (3 Habs Privadas / 1 por Célula) · Con Ascensor",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 3.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 575.0,
+          "total_stay_eur": 1150.0,
+          "cost_person_night_8": 71.88,
+          "cost_person_night_9": 63.89,
+          "within_budget_8": false,
+          "within_budget_9": true,
+          "savings_per_night_eur": 10.0,
+          "total_savings_stay_eur": 20.0,
+          "budget_status": "Excede presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": true,
+          "crib_status": "Cuna disponible GRATIS",
+          "family_amenities": [],
+          "baby_score": 9.0,
+          "notes": "En Booking se confirma cuna en el paso de reserva."
+        },
+        "location": {
+          "location_score": 10.0,
+          "strategic_highlights": [
+            "A minutos de Zürich HB",
+            "Barrio céntrico y súper seguro"
+          ],
+          "transit_proximity": "A 300 m llanos a pie de la Estación Central (Zürich HB)"
+        }
+      },
+      {
+        "id": "zrh_a_2",
+        "platform": "airbnb",
+        "name": "Spacious Historic Residence near Lindenhof & Zürich HB (3 Dorms)",
+        "city_id": "zurich",
+        "property_type": "Residencia de época en el casco antiguo (3 dormitorios)",
+        "neighborhood": "Kreis 1 (Altstadt)",
+        "address": "Rennweg / Lindenhof, Zúrich",
+        "price_per_night_eur": 560.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 2.0,
+        "rating": 4.93,
+        "review_count": 89,
+        "transit_proximity": "A 450 m a pie de la Estación Central (Zürich HB)",
+        "amenities": [
+          "Cocina completa",
+          "Cuna de viaje",
+          "Trona",
+          "Zona peatonal sin coches"
+        ],
+        "baby_notes": "Calle exclusivamente peatonal junto al mirador de Lindenhof, tranquilidad total en el centro.",
+        "search_term": "Altstadt Zurich Switzerland",
+        "url": "https://www.airbnb.es/s/Altstadt+Zurich+Switzerland/homes?checkin=2027-09-17&checkout=2027-09-19&adults=7&children=1&infants=1&min_bedrooms=3&room_types%5B%5D=Entire+home%2Fapt&price_max=585",
+        "elevator_status": "Sin Ascensor (1er/2do Piso)",
+        "link_type": "Airbnb Entero (3 Dorms / 1 por Célula) · Sin Ascensor (1er/2do Piso)",
+        "privacy": "100% Privado (Alojamiento entero de uso exclusivo sin extraños)",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 2.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 560.0,
+          "total_stay_eur": 1120.0,
+          "cost_person_night_8": 70.0,
+          "cost_person_night_9": 62.22,
+          "within_budget_8": false,
+          "within_budget_9": true,
+          "savings_per_night_eur": 25.0,
+          "total_savings_stay_eur": 50.0,
+          "budget_status": "Excede presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": false,
+          "crib_status": "Cuna disponible (consultar suplemento/a petición)",
+          "family_amenities": [
+            "trona"
+          ],
+          "baby_score": 8.5,
+          "notes": "Airbnb no cobra tarifa adicional por bebés (< 2 años)."
+        },
+        "location": {
+          "location_score": 9.0,
+          "strategic_highlights": [
+            "Barrio céntrico y súper seguro"
+          ],
+          "transit_proximity": "A 450 m a pie de la Estación Central (Zürich HB)"
+        }
+      },
+      {
+        "id": "zrh_a_3",
+        "platform": "airbnb",
+        "name": "Cozy Family Garden Oasis in Zurich Wiedikon (3 Dorms)",
+        "city_id": "zurich",
+        "property_type": "Apartamento espacioso con jardín común (3 dormitorios)",
+        "neighborhood": "Wiedikon / Kreis 3",
+        "address": "Birmensdorferstrasse, Wiedikon, Zúrich",
+        "price_per_night_eur": 465.0,
+        "max_guests": 10,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 2.0,
+        "rating": 4.91,
+        "review_count": 112,
+        "transit_proximity": "Tranvía a 80 m (L9 y L14 directos a Zürich HB en 8 minutos)",
+        "amenities": [
+          "Cocina equipada",
+          "Cuna bebé",
+          "Trona",
+          "Jardín con columpios",
+          "Lavadora"
+        ],
+        "baby_notes": "Jardín residencial con columpios y césped para los niños. Cocina amplia para ahorrar en cenas suizas.",
+        "search_term": "Wiedikon Zurich Switzerland",
+        "url": "https://www.airbnb.es/s/Wiedikon+Zurich+Switzerland/homes?checkin=2027-09-17&checkout=2027-09-19&adults=7&children=1&infants=1&min_bedrooms=3&room_types%5B%5D=Entire+home%2Fapt&price_max=585",
+        "elevator_status": "Sin Ascensor (1er/2do Piso)",
+        "link_type": "Airbnb Entero (3 Dorms / 1 por Célula) · Sin Ascensor (1er/2do Piso)",
+        "privacy": "100% Privado (Alojamiento entero de uso exclusivo sin extraños)",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 10,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 2.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Muy espacioso (hasta 10 huéspedes)"
+        },
+        "pricing": {
+          "price_per_night_eur": 465.0,
+          "total_stay_eur": 930.0,
+          "cost_person_night_8": 58.12,
+          "cost_person_night_9": 51.67,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 120.0,
+          "total_savings_stay_eur": 240.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": false,
+          "crib_status": "Cuna disponible (consultar suplemento/a petición)",
+          "family_amenities": [
+            "trona"
+          ],
+          "baby_score": 8.5,
+          "notes": "Airbnb no cobra tarifa adicional por bebés (< 2 años)."
+        },
+        "location": {
+          "location_score": 9.0,
+          "strategic_highlights": [
+            "Barrio céntrico y súper seguro"
+          ],
+          "transit_proximity": "Tranvía a 80 m (L9 y L14 directos a Zürich HB en 8 minutos)"
+        }
+      },
+      {
+        "id": "zrh_b_walkup",
+        "platform": "booking",
+        "name": "Altstadt Historic Residence Niederdorf (1. Stock Sin Ascensor - Ahorro Centro)",
+        "city_id": "zurich",
+        "property_type": "Apartamento histórico restaurado (3 dormitorios grandes + sala)",
+        "neighborhood": "Kreis 1 (Altstadt / Niederdorf)",
+        "address": "Niederdorfstrasse, Zúrich",
+        "price_per_night_eur": 480.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 2.0,
+        "rating": 8.9,
+        "review_count": 360,
+        "no_rooms": 1,
+        "privacy": "100% Privado (Piso entero en casco antiguo peatonal)",
+        "elevator_status": "Sin Ascensor (1er Piso Suizo / 16 escalones)",
+        "transit_proximity": "A 400 m a pie de Zürich HB y 100 m del río Limmat",
+        "amenities": [
+          "Cocina completa",
+          "Cuna bajo petición",
+          "Insonorización triple vidrio",
+          "Wifi alta velocidad"
+        ],
+        "baby_notes": "En pleno corazón peatonal de Zúrich. Se sube un piso por escaleras anchas. Ahorro de €100/noche.",
+        "hotel_slug": "townhouse",
+        "country_code": "ch",
+        "multiplatform": {
+          "google_hotels": "https://www.google.com/travel/hotels?q=Altstadt+Historic+Residence+Niederdorf+zurich&dates=2027-09-17,2027-09-19&adults=7&hl=es",
+          "booking_direct": "https://www.booking.com/hotel/ch/townhouse.es.html",
+          "booking_with_dates": "https://www.booking.com/hotel/ch/townhouse.es.html?checkin=2027-09-17&checkout=2027-09-19&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "booking_search_prop": "https://www.booking.com/searchresults.es.html?ss=Altstadt+Historic+Residence+Niederdorf+zurich&checkin=2027-09-17&checkout=2027-09-19&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "trivago": "https://www.trivago.es/es-ES/srl/alojamiento-zurich?search=100-200;dr-20270917-20270919;rc-1-7",
+          "official_web": ""
+        },
+        "url": "https://www.booking.com/hotel/ch/townhouse.es.html?checkin=2027-09-17&checkout=2027-09-19&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "google_hotels_url": "https://www.google.com/travel/hotels?q=Altstadt+Historic+Residence+Niederdorf+zurich&dates=2027-09-17,2027-09-19&adults=7&hl=es",
+        "booking_url": "https://www.booking.com/hotel/ch/townhouse.es.html",
+        "booking_dates_url": "https://www.booking.com/hotel/ch/townhouse.es.html?checkin=2027-09-17&checkout=2027-09-19&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "booking_search_prop_url": "https://www.booking.com/searchresults.es.html?ss=Altstadt+Historic+Residence+Niederdorf+zurich&checkin=2027-09-17&checkout=2027-09-19&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "trivago_url": "https://www.trivago.es/es-ES/srl/alojamiento-zurich?search=100-200;dr-20270917-20270919;rc-1-7",
+        "link_type": "Apartamento Entero (3 Dorms / 1 por Célula) · Sin Ascensor (1er Piso Suizo / 16 escalones)",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 2.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 480.0,
+          "total_stay_eur": 960.0,
+          "cost_person_night_8": 60.0,
+          "cost_person_night_9": 53.33,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 105.0,
+          "total_savings_stay_eur": 210.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": false,
+          "crib_status": "Cuna disponible (consultar suplemento/a petición)",
+          "family_amenities": [],
+          "baby_score": 8.0,
+          "notes": "En Booking se confirma cuna en el paso de reserva."
+        },
+        "location": {
+          "location_score": 9.0,
+          "strategic_highlights": [
+            "Barrio céntrico y súper seguro"
+          ],
+          "transit_proximity": "A 400 m a pie de Zürich HB y 100 m del río Limmat"
+        }
+      },
+      {
+        "id": "zrh_b_2",
+        "platform": "booking",
+        "name": "Swiss Star Zürich Wiedikon / Sihlfeld Family Suites (Apartamento 3 Dorms)",
+        "city_id": "zurich",
+        "property_type": "Apartamento completo privado (3 dormitorios amplios)",
+        "neighborhood": "Wiedikon / Kreis 3",
+        "address": "Zweierstrasse / Sihlfeld, Wiedikon, Zúrich",
+        "price_per_night_eur": 520.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 2.0,
+        "rating": 8.6,
+        "review_count": 910,
+        "no_rooms": 1,
+        "privacy": "100% Privado (Apartamento entero sin compartir con extraños)",
+        "elevator_status": "Con Ascensor",
+        "transit_proximity": "Tranvía Schmiede Wiedikon a 110 m directo a Zürich HB",
+        "amenities": [
+          "Cocina equipada",
+          "Cuna a petición",
+          "Zona de estar espaciosa",
+          "Auto check-in 24h"
+        ],
+        "baby_notes": "Zona residencial suiza muy tranquila. Supermercados Coop y Migros a 80 metros para preparar desayunos y cenas.",
+        "hotel_slug": "swiss-star-sihlfeld",
+        "country_code": "ch",
+        "multiplatform": {
+          "google_hotels": "https://www.google.com/travel/hotels?q=Swiss+Star+Z%C3%BCrich+Wiedikon+%2F+Sihlfeld+Family+Suites+zurich&dates=2027-09-17,2027-09-19&adults=7&hl=es",
+          "booking_direct": "https://www.booking.com/hotel/ch/swiss-star-sihlfeld.es.html",
+          "booking_with_dates": "https://www.booking.com/hotel/ch/swiss-star-sihlfeld.es.html?checkin=2027-09-17&checkout=2027-09-19&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "booking_search_prop": "https://www.booking.com/searchresults.es.html?ss=Swiss+Star+Z%C3%BCrich+Wiedikon+%2F+Sihlfeld+Family+Suites+zurich&checkin=2027-09-17&checkout=2027-09-19&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "trivago": "https://www.trivago.es/es-ES/srl/alojamiento-zurich?search=100-200;dr-20270917-20270919;rc-1-7",
+          "official_web": ""
+        },
+        "url": "https://www.booking.com/hotel/ch/swiss-star-sihlfeld.es.html?checkin=2027-09-17&checkout=2027-09-19&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "google_hotels_url": "https://www.google.com/travel/hotels?q=Swiss+Star+Z%C3%BCrich+Wiedikon+%2F+Sihlfeld+Family+Suites+zurich&dates=2027-09-17,2027-09-19&adults=7&hl=es",
+        "booking_url": "https://www.booking.com/hotel/ch/swiss-star-sihlfeld.es.html",
+        "booking_dates_url": "https://www.booking.com/hotel/ch/swiss-star-sihlfeld.es.html?checkin=2027-09-17&checkout=2027-09-19&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "booking_search_prop_url": "https://www.booking.com/searchresults.es.html?ss=Swiss+Star+Z%C3%BCrich+Wiedikon+%2F+Sihlfeld+Family+Suites+zurich&checkin=2027-09-17&checkout=2027-09-19&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "trivago_url": "https://www.trivago.es/es-ES/srl/alojamiento-zurich?search=100-200;dr-20270917-20270919;rc-1-7",
+        "link_type": "Apartamento Entero (3 Dorms / 1 por Célula) · Con Ascensor",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 2.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 520.0,
+          "total_stay_eur": 1040.0,
+          "cost_person_night_8": 65.0,
+          "cost_person_night_9": 57.78,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 65.0,
+          "total_savings_stay_eur": 130.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": false,
+          "crib_status": "Cuna disponible (consultar suplemento/a petición)",
+          "family_amenities": [],
+          "baby_score": 8.0,
+          "notes": "En Booking se confirma cuna en el paso de reserva."
+        },
+        "location": {
+          "location_score": 9.0,
+          "strategic_highlights": [
+            "Barrio céntrico y súper seguro"
+          ],
+          "transit_proximity": "Tranvía Schmiede Wiedikon a 110 m directo a Zürich HB"
+        }
+      }
+    ],
+    "rome": [
+      {
+        "id": "rom_b_1",
+        "platform": "booking",
+        "name": "Residenza Rione Monti Colosseum Grand Suites (Apartamento 3 Dorms)",
+        "city_id": "rome",
+        "property_type": "Gran apartamento clásico privado (3 dormitorios amplios + salón)",
+        "neighborhood": "Rione Monti",
+        "address": "Via dei Serpenti, Rione Monti, Roma",
+        "price_per_night_eur": 465.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 3.0,
+        "rating": 9.4,
+        "review_count": 780,
+        "no_rooms": 1,
+        "privacy": "100% Privado (Apartamento señorial exclusivo para las 3 células)",
+        "elevator_status": "Con Ascensor",
+        "transit_proximity": "Metro B Cavour a 190 m; Coliseo a 450 m a pie",
+        "amenities": [
+          "Cocina completa",
+          "Cuna gratis",
+          "Trona",
+          "Ascensor",
+          "3 baños completos",
+          "AC"
+        ],
+        "baby_notes": "1 dormitorio y 1 baño por cada célula familiar. Cuna y trona gratis. A 5 minutos caminando del Coliseo.",
+        "hotel_slug": "residenza-rione-monti",
+        "country_code": "it",
+        "multiplatform": {
+          "google_hotels": "https://www.google.com/travel/hotels?q=Residenza+Rione+Monti+Colosseum+Grand+Suites+rome&dates=2027-09-19,2027-09-24&adults=7&hl=es",
+          "booking_direct": "https://www.booking.com/hotel/it/residenza-rione-monti.es.html",
+          "booking_with_dates": "https://www.booking.com/hotel/it/residenza-rione-monti.es.html?checkin=2027-09-19&checkout=2027-09-24&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "booking_search_prop": "https://www.booking.com/searchresults.es.html?ss=Residenza+Rione+Monti+Colosseum+Grand+Suites+rome&checkin=2027-09-19&checkout=2027-09-24&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "trivago": "https://www.trivago.es/es-ES/srl/alojamiento-rome?search=100-200;dr-20270919-20270924;rc-1-7",
+          "official_web": ""
+        },
+        "url": "https://www.booking.com/hotel/it/residenza-rione-monti.es.html?checkin=2027-09-19&checkout=2027-09-24&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "google_hotels_url": "https://www.google.com/travel/hotels?q=Residenza+Rione+Monti+Colosseum+Grand+Suites+rome&dates=2027-09-19,2027-09-24&adults=7&hl=es",
+        "booking_url": "https://www.booking.com/hotel/it/residenza-rione-monti.es.html",
+        "booking_dates_url": "https://www.booking.com/hotel/it/residenza-rione-monti.es.html?checkin=2027-09-19&checkout=2027-09-24&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "booking_search_prop_url": "https://www.booking.com/searchresults.es.html?ss=Residenza+Rione+Monti+Colosseum+Grand+Suites+rome&checkin=2027-09-19&checkout=2027-09-24&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "trivago_url": "https://www.trivago.es/es-ES/srl/alojamiento-rome?search=100-200;dr-20270919-20270924;rc-1-7",
+        "link_type": "Apartamento Entero (3 Dorms / 1 por Célula) · Con Ascensor",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 3.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 465.0,
+          "total_stay_eur": 2325.0,
+          "cost_person_night_8": 58.12,
+          "cost_person_night_9": 51.67,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 120.0,
+          "total_savings_stay_eur": 600.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": true,
+          "crib_status": "Cuna disponible GRATIS",
+          "family_amenities": [
+            "trona"
+          ],
+          "baby_score": 9.5,
+          "notes": "En Booking se confirma cuna en el paso de reserva."
+        },
+        "location": {
+          "location_score": 8.5,
+          "strategic_highlights": [
+            "Barrio Rione Monti (tranquilo y seguro)"
+          ],
+          "transit_proximity": "Metro B Cavour a 190 m; Coliseo a 450 m a pie"
+        }
+      },
+      {
+        "id": "rom_a_1",
+        "platform": "airbnb",
+        "name": "Attico Panoramico a 300m dal Colosseo nel Rione Monti (3 Dorms)",
+        "city_id": "rome",
+        "property_type": "Ático señorial con terraza privada (3 dormitorios amplios)",
+        "neighborhood": "Rione Monti",
+        "address": "Via Panisperna / Via dei Serpenti, Monti, Roma",
+        "price_per_night_eur": 450.0,
+        "max_guests": 10,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 3.0,
+        "rating": 4.97,
+        "review_count": 184,
+        "transit_proximity": "Metro B Cavour a 160 m; Coliseo a 350 m a pie",
+        "amenities": [
+          "Cocina de diseño",
+          "Cuna gratis",
+          "Trona",
+          "Terraza",
+          "Ascensor",
+          "AC"
+        ],
+        "baby_notes": "Superhost con cuna, trona y 3 baños completos (1 por célula familiar). A pasos del Coliseo.",
+        "search_term": "Rione Monti Rome Italy",
+        "url": "https://www.airbnb.es/s/Rione+Monti+Rome+Italy/homes?checkin=2027-09-19&checkout=2027-09-24&adults=7&children=1&infants=1&min_bedrooms=3&room_types%5B%5D=Entire+home%2Fapt&price_max=585",
+        "elevator_status": "Con Ascensor",
+        "link_type": "Airbnb Entero (3 Dorms / 1 por Célula) · Con Ascensor",
+        "privacy": "100% Privado (Alojamiento entero de uso exclusivo sin extraños)",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 10,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 3.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Muy espacioso (hasta 10 huéspedes)"
+        },
+        "pricing": {
+          "price_per_night_eur": 450.0,
+          "total_stay_eur": 2250.0,
+          "cost_person_night_8": 56.25,
+          "cost_person_night_9": 50.0,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 135.0,
+          "total_savings_stay_eur": 675.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": true,
+          "crib_status": "Cuna disponible GRATIS",
+          "family_amenities": [
+            "trona"
+          ],
+          "baby_score": 9.5,
+          "notes": "Airbnb no cobra tarifa adicional por bebés (< 2 años)."
+        },
+        "location": {
+          "location_score": 8.5,
+          "strategic_highlights": [
+            "Barrio Rione Monti (tranquilo y seguro)"
+          ],
+          "transit_proximity": "Metro B Cavour a 160 m; Coliseo a 350 m a pie"
+        }
+      },
+      {
+        "id": "rom_b_2",
+        "platform": "booking",
+        "name": "Capo d'Africa Colosseo Family Suites (Apartamento 3 Dorms Frente a Jardines)",
+        "city_id": "rome",
+        "property_type": "Residencia familiar señorial privada (3 dormitorios + 2.5 baños)",
+        "neighborhood": "Celio (junto a Villa Celimontana)",
+        "address": "Via Celimontana / Capo d'Africa, Celio, Roma",
+        "price_per_night_eur": 430.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 2.5,
+        "rating": 9.2,
+        "review_count": 590,
+        "no_rooms": 1,
+        "privacy": "100% Privado (Piso entero señorial)",
+        "elevator_status": "Con Ascensor",
+        "transit_proximity": "Metro B Colosseo a 400 m; Coliseo a 350 m a pie",
+        "amenities": [
+          "Cocina espaciosa",
+          "Cuna gratis",
+          "Jardín / terraza",
+          "Lavadora",
+          "AC"
+        ],
+        "baby_notes": "Frente a los jardines de Villa Celimontana, perfectos para pasear a Santiago y Sofía con sombra.",
+        "hotel_slug": "capo-d-africa-colosseo",
+        "country_code": "it",
+        "multiplatform": {
+          "google_hotels": "https://www.google.com/travel/hotels?q=Capo+d%27Africa+Colosseo+Family+Suites+rome&dates=2027-09-19,2027-09-24&adults=7&hl=es",
+          "booking_direct": "https://www.booking.com/hotel/it/capo-d-africa-colosseo.es.html",
+          "booking_with_dates": "https://www.booking.com/hotel/it/capo-d-africa-colosseo.es.html?checkin=2027-09-19&checkout=2027-09-24&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "booking_search_prop": "https://www.booking.com/searchresults.es.html?ss=Capo+d%27Africa+Colosseo+Family+Suites+rome&checkin=2027-09-19&checkout=2027-09-24&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "trivago": "https://www.trivago.es/es-ES/srl/alojamiento-rome?search=100-200;dr-20270919-20270924;rc-1-7",
+          "official_web": ""
+        },
+        "url": "https://www.booking.com/hotel/it/capo-d-africa-colosseo.es.html?checkin=2027-09-19&checkout=2027-09-24&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "google_hotels_url": "https://www.google.com/travel/hotels?q=Capo+d%27Africa+Colosseo+Family+Suites+rome&dates=2027-09-19,2027-09-24&adults=7&hl=es",
+        "booking_url": "https://www.booking.com/hotel/it/capo-d-africa-colosseo.es.html",
+        "booking_dates_url": "https://www.booking.com/hotel/it/capo-d-africa-colosseo.es.html?checkin=2027-09-19&checkout=2027-09-24&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "booking_search_prop_url": "https://www.booking.com/searchresults.es.html?ss=Capo+d%27Africa+Colosseo+Family+Suites+rome&checkin=2027-09-19&checkout=2027-09-24&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "trivago_url": "https://www.trivago.es/es-ES/srl/alojamiento-rome?search=100-200;dr-20270919-20270924;rc-1-7",
+        "link_type": "Apartamento Entero (3 Dorms / 1 por Célula) · Con Ascensor",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 2.5,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 430.0,
+          "total_stay_eur": 2150.0,
+          "cost_person_night_8": 53.75,
+          "cost_person_night_9": 47.78,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 155.0,
+          "total_savings_stay_eur": 775.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": true,
+          "crib_status": "Cuna disponible GRATIS",
+          "family_amenities": [],
+          "baby_score": 9.0,
+          "notes": "En Booking se confirma cuna en el paso de reserva."
+        },
+        "location": {
+          "location_score": 8.5,
+          "strategic_highlights": [
+            "Zona Celio (residencial junto a parques)"
+          ],
+          "transit_proximity": "Metro B Colosseo a 400 m; Coliseo a 350 m a pie"
+        }
+      },
+      {
+        "id": "rom_b_walkup",
+        "platform": "booking",
+        "name": "Palazzetto Rione Monti Cavour (1° Piano Sin Ascensor - Gran Ahorro)",
+        "city_id": "rome",
+        "property_type": "Apartamento señorial romano (3 dormitorios grandes con vigas de madera)",
+        "neighborhood": "Rione Monti",
+        "address": "Via Cavour / Via Urbana, Roma",
+        "price_per_night_eur": 370.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 2.0,
+        "rating": 9.1,
+        "review_count": 540,
+        "no_rooms": 1,
+        "privacy": "100% Privado (Palacete romano exclusivo sin extraños)",
+        "elevator_status": "Sin Ascensor (1er Piso / 16 escalones de mármol anchos)",
+        "transit_proximity": "Metro B Cavour a 120 m y Termini (Frecciarossa) a 550 m",
+        "amenities": [
+          "Cocina equipada",
+          "Cuna gratis",
+          "Lavadora",
+          "AC en todas las estancias",
+          "Techos altos"
+        ],
+        "baby_notes": "Escaleras de mármol suaves (16 peldaños). Ahorro de €95/noche (€475 total en las 5 noches de Roma).",
+        "hotel_slug": "capo-d-africa-colosseo",
+        "country_code": "it",
+        "multiplatform": {
+          "google_hotels": "https://www.google.com/travel/hotels?q=Palazzetto+Rione+Monti+Cavour+rome&dates=2027-09-19,2027-09-24&adults=7&hl=es",
+          "booking_direct": "https://www.booking.com/hotel/it/capo-d-africa-colosseo.es.html",
+          "booking_with_dates": "https://www.booking.com/hotel/it/capo-d-africa-colosseo.es.html?checkin=2027-09-19&checkout=2027-09-24&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "booking_search_prop": "https://www.booking.com/searchresults.es.html?ss=Palazzetto+Rione+Monti+Cavour+rome&checkin=2027-09-19&checkout=2027-09-24&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "trivago": "https://www.trivago.es/es-ES/srl/alojamiento-rome?search=100-200;dr-20270919-20270924;rc-1-7",
+          "official_web": ""
+        },
+        "url": "https://www.booking.com/hotel/it/capo-d-africa-colosseo.es.html?checkin=2027-09-19&checkout=2027-09-24&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "google_hotels_url": "https://www.google.com/travel/hotels?q=Palazzetto+Rione+Monti+Cavour+rome&dates=2027-09-19,2027-09-24&adults=7&hl=es",
+        "booking_url": "https://www.booking.com/hotel/it/capo-d-africa-colosseo.es.html",
+        "booking_dates_url": "https://www.booking.com/hotel/it/capo-d-africa-colosseo.es.html?checkin=2027-09-19&checkout=2027-09-24&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "booking_search_prop_url": "https://www.booking.com/searchresults.es.html?ss=Palazzetto+Rione+Monti+Cavour+rome&checkin=2027-09-19&checkout=2027-09-24&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "trivago_url": "https://www.trivago.es/es-ES/srl/alojamiento-rome?search=100-200;dr-20270919-20270924;rc-1-7",
+        "link_type": "Apartamento Entero (3 Dorms / 1 por Célula) · Sin Ascensor (1er Piso / 16 escalones de mármol anchos)",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 2.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 370.0,
+          "total_stay_eur": 1850.0,
+          "cost_person_night_8": 46.25,
+          "cost_person_night_9": 41.11,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 215.0,
+          "total_savings_stay_eur": 1075.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": true,
+          "crib_status": "Cuna disponible GRATIS",
+          "family_amenities": [],
+          "baby_score": 9.0,
+          "notes": "En Booking se confirma cuna en el paso de reserva."
+        },
+        "location": {
+          "location_score": 9.5,
+          "strategic_highlights": [
+            "Barrio Rione Monti (tranquilo y seguro)",
+            "Metro Línea B directo"
+          ],
+          "transit_proximity": "Metro B Cavour a 120 m y Termini (Frecciarossa) a 550 m"
+        }
+      },
+      {
+        "id": "rom_b_3",
+        "platform": "booking",
+        "name": "Hotel Raffaello / Merulana Suite Roma (Opción Hotel: 3 Habitaciones Privadas)",
+        "city_id": "rome",
+        "property_type": "Hotel 3/4 estrellas familiar (3 habitaciones privadas con baño en suite)",
+        "neighborhood": "Rione Monti / Esquilino",
+        "address": "Via Urbana / Via Merulana, Roma",
+        "price_per_night_eur": 480.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 3.0,
+        "rating": 8.9,
+        "review_count": 2400,
+        "no_rooms": 3,
+        "privacy": "100% Privado (3 habitaciones de hotel independientes con baño)",
+        "elevator_status": "Con Ascensor",
+        "transit_proximity": "A 150 m de Metro Cavour y 500 m de Roma Termini",
+        "amenities": [
+          "Desayuno buffet incluido",
+          "Cuna gratis",
+          "Ascensor",
+          "Recepción 24h",
+          "AC"
+        ],
+        "baby_notes": "Confort hotelero en pleno Rione Monti con recepción 24h, desayuno incluido y cuna para Santiago.",
+        "hotel_slug": "raffaello-rome",
+        "country_code": "it",
+        "multiplatform": {
+          "google_hotels": "https://www.google.com/travel/hotels?q=Hotel+Raffaello+%2F+Merulana+Suite+Roma+rome&dates=2027-09-19,2027-09-24&adults=7&hl=es",
+          "booking_direct": "https://www.booking.com/hotel/it/raffaello-rome.es.html",
+          "booking_with_dates": "https://www.booking.com/hotel/it/raffaello-rome.es.html?checkin=2027-09-19&checkout=2027-09-24&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+          "booking_search_prop": "https://www.booking.com/searchresults.es.html?ss=Hotel+Raffaello+%2F+Merulana+Suite+Roma+rome&checkin=2027-09-19&checkout=2027-09-24&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+          "trivago": "https://www.trivago.es/es-ES/srl/alojamiento-rome?search=100-200;dr-20270919-20270924;rc-1-7",
+          "official_web": ""
+        },
+        "url": "https://www.booking.com/hotel/it/raffaello-rome.es.html?checkin=2027-09-19&checkout=2027-09-24&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+        "google_hotels_url": "https://www.google.com/travel/hotels?q=Hotel+Raffaello+%2F+Merulana+Suite+Roma+rome&dates=2027-09-19,2027-09-24&adults=7&hl=es",
+        "booking_url": "https://www.booking.com/hotel/it/raffaello-rome.es.html",
+        "booking_dates_url": "https://www.booking.com/hotel/it/raffaello-rome.es.html?checkin=2027-09-19&checkout=2027-09-24&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+        "booking_search_prop_url": "https://www.booking.com/searchresults.es.html?ss=Hotel+Raffaello+%2F+Merulana+Suite+Roma+rome&checkin=2027-09-19&checkout=2027-09-24&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+        "trivago_url": "https://www.trivago.es/es-ES/srl/alojamiento-rome?search=100-200;dr-20270919-20270924;rc-1-7",
+        "link_type": "Hotel Familiar (3 Habs Privadas / 1 por Célula) · Con Ascensor",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 3.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 480.0,
+          "total_stay_eur": 2400.0,
+          "cost_person_night_8": 60.0,
+          "cost_person_night_9": 53.33,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 105.0,
+          "total_savings_stay_eur": 525.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": true,
+          "crib_status": "Cuna disponible GRATIS",
+          "family_amenities": [],
+          "baby_score": 9.0,
+          "notes": "En Booking se confirma cuna en el paso de reserva."
+        },
+        "location": {
+          "location_score": 8.5,
+          "strategic_highlights": [
+            "Barrio Rione Monti (tranquilo y seguro)"
+          ],
+          "transit_proximity": "A 150 m de Metro Cavour y 500 m de Roma Termini"
+        }
+      },
+      {
+        "id": "rom_a_2",
+        "platform": "airbnb",
+        "name": "Villa Celimontana Quiet Family Haven near Colosseum (3 Dorms)",
+        "city_id": "rome",
+        "property_type": "Residencia con patio privado (3 dormitorios)",
+        "neighborhood": "Celio / Colosseo",
+        "address": "Via di San Paolo della Croce, Celio, Roma",
+        "price_per_night_eur": 410.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 2.5,
+        "rating": 4.94,
+        "review_count": 92,
+        "transit_proximity": "Metro B Colosseo a 380 m; a 5 min a pie del Coliseo",
+        "amenities": [
+          "Cocina espaciosa",
+          "Cuna plegable",
+          "Trona",
+          "Patio seguro",
+          "AC"
+        ],
+        "baby_notes": "Entorno verde y silencioso junto al parque de Villa Celimontana, ideal para el descanso de los niños.",
+        "search_term": "Colosseum Celio Rome Italy",
+        "url": "https://www.airbnb.es/s/Colosseum+Celio+Rome+Italy/homes?checkin=2027-09-19&checkout=2027-09-24&adults=7&children=1&infants=1&min_bedrooms=3&room_types%5B%5D=Entire+home%2Fapt&price_max=585",
+        "elevator_status": "Sin Ascensor (1er/2do Piso)",
+        "link_type": "Airbnb Entero (3 Dorms / 1 por Célula) · Sin Ascensor (1er/2do Piso)",
+        "privacy": "100% Privado (Alojamiento entero de uso exclusivo sin extraños)",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 2.5,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 410.0,
+          "total_stay_eur": 2050.0,
+          "cost_person_night_8": 51.25,
+          "cost_person_night_9": 45.56,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 175.0,
+          "total_savings_stay_eur": 875.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": false,
+          "crib_status": "Cuna disponible (consultar suplemento/a petición)",
+          "family_amenities": [
+            "trona"
+          ],
+          "baby_score": 8.5,
+          "notes": "Airbnb no cobra tarifa adicional por bebés (< 2 años)."
+        },
+        "location": {
+          "location_score": 10.0,
+          "strategic_highlights": [
+            "A pasos del Coliseo",
+            "Zona Celio (residencial junto a parques)"
+          ],
+          "transit_proximity": "Metro B Colosseo a 380 m; a 5 min a pie del Coliseo"
+        }
+      },
+      {
+        "id": "rom_a_3",
+        "platform": "airbnb",
+        "name": "Elegante Residenza d'Epoca en Prati / Vaticano o San Giovanni (3 Dorms)",
+        "city_id": "rome",
+        "property_type": "Apartamento de techos altos (3 dormitorios + 2 baños)",
+        "neighborhood": "San Giovanni / Manzoni",
+        "address": "Via Emanuele Filiberto, Roma",
+        "price_per_night_eur": 360.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 2.0,
+        "rating": 4.9,
+        "review_count": 130,
+        "transit_proximity": "Metro A Manzoni a 90 m (directo a Vaticano y Plaza España)",
+        "amenities": [
+          "Cocina completa",
+          "Cuna para bebé",
+          "Ascensor",
+          "AC",
+          "Supermercados"
+        ],
+        "baby_notes": "Línea A directa al Vaticano y Plaza de España; a 12 min a pie del Coliseo.",
+        "search_term": "San Giovanni Rome Italy",
+        "url": "https://www.airbnb.es/s/San+Giovanni+Rome+Italy/homes?checkin=2027-09-19&checkout=2027-09-24&adults=7&children=1&infants=1&min_bedrooms=3&room_types%5B%5D=Entire+home%2Fapt&price_max=585",
+        "elevator_status": "Con Ascensor",
+        "link_type": "Airbnb Entero (3 Dorms / 1 por Célula) · Con Ascensor",
+        "privacy": "100% Privado (Alojamiento entero de uso exclusivo sin extraños)",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 2.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 360.0,
+          "total_stay_eur": 1800.0,
+          "cost_person_night_8": 45.0,
+          "cost_person_night_9": 40.0,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 225.0,
+          "total_savings_stay_eur": 1125.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": false,
+          "crib_status": "Cuna disponible (consultar suplemento/a petición)",
+          "family_amenities": [],
+          "baby_score": 8.0,
+          "notes": "Airbnb no cobra tarifa adicional por bebés (< 2 años)."
+        },
+        "location": {
+          "location_score": 7.0,
+          "strategic_highlights": [
+            "Ubicación estratégica con acceso a transporte"
+          ],
+          "transit_proximity": "Metro A Manzoni a 90 m (directo a Vaticano y Plaza España)"
+        }
+      }
+    ],
+    "salerno": [
+      {
+        "id": "sal_b_2",
+        "platform": "booking",
+        "name": "Corso Vittorio Emanuele Family Palace (Residencia Familiar 3 Dorms)",
+        "city_id": "salerno",
+        "property_type": "Palacio residencial familiar privado (3 dormitorios + salón doble)",
+        "neighborhood": "Corso Vittorio Emanuele / Centro",
+        "address": "Corso Vittorio Emanuele, Salerno",
+        "price_per_night_eur": 335.0,
+        "max_guests": 10,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 2.5,
+        "rating": 9.4,
+        "review_count": 510,
+        "no_rooms": 1,
+        "privacy": "100% Privado (Piso entero señorial sin zonas compartidas)",
+        "elevator_status": "Con Ascensor",
+        "transit_proximity": "A 250 m llanos de la Estación Central de Salerno (Frecciarossa) y Molo Concordia",
+        "amenities": [
+          "Cocina gourmet",
+          "Cuna gratis",
+          "Trona",
+          "Ascensor llano",
+          "AC"
+        ],
+        "baby_notes": "Sin escalones de acceso. Sobre el bulevar peatonal plano entre la estación de tren y el muelle de ferries.",
+        "hotel_slug": "gran-suite-corso-vittorio-emanuele",
+        "country_code": "it",
+        "multiplatform": {
+          "google_hotels": "https://www.google.com/travel/hotels?q=Corso+Vittorio+Emanuele+Family+Palace+salerno&dates=2027-09-24,2027-09-27&adults=7&hl=es",
+          "booking_direct": "https://www.booking.com/hotel/it/gran-suite-corso-vittorio-emanuele.es.html",
+          "booking_with_dates": "https://www.booking.com/hotel/it/gran-suite-corso-vittorio-emanuele.es.html?checkin=2027-09-24&checkout=2027-09-27&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "booking_search_prop": "https://www.booking.com/searchresults.es.html?ss=Corso+Vittorio+Emanuele+Family+Palace+salerno&checkin=2027-09-24&checkout=2027-09-27&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "trivago": "https://www.trivago.es/es-ES/srl/alojamiento-salerno?search=100-200;dr-20270924-20270927;rc-1-7",
+          "official_web": ""
+        },
+        "url": "https://www.booking.com/hotel/it/gran-suite-corso-vittorio-emanuele.es.html?checkin=2027-09-24&checkout=2027-09-27&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "google_hotels_url": "https://www.google.com/travel/hotels?q=Corso+Vittorio+Emanuele+Family+Palace+salerno&dates=2027-09-24,2027-09-27&adults=7&hl=es",
+        "booking_url": "https://www.booking.com/hotel/it/gran-suite-corso-vittorio-emanuele.es.html",
+        "booking_dates_url": "https://www.booking.com/hotel/it/gran-suite-corso-vittorio-emanuele.es.html?checkin=2027-09-24&checkout=2027-09-27&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "booking_search_prop_url": "https://www.booking.com/searchresults.es.html?ss=Corso+Vittorio+Emanuele+Family+Palace+salerno&checkin=2027-09-24&checkout=2027-09-27&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "trivago_url": "https://www.trivago.es/es-ES/srl/alojamiento-salerno?search=100-200;dr-20270924-20270927;rc-1-7",
+        "link_type": "Apartamento Entero (3 Dorms / 1 por Célula) · Con Ascensor",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 10,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 2.5,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Muy espacioso (hasta 10 huéspedes)"
+        },
+        "pricing": {
+          "price_per_night_eur": 335.0,
+          "total_stay_eur": 1005.0,
+          "cost_person_night_8": 41.88,
+          "cost_person_night_9": 37.22,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 250.0,
+          "total_savings_stay_eur": 750.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": true,
+          "crib_status": "Cuna disponible GRATIS",
+          "family_amenities": [
+            "trona"
+          ],
+          "baby_score": 9.5,
+          "notes": "En Booking se confirma cuna en el paso de reserva."
+        },
+        "location": {
+          "location_score": 9.0,
+          "strategic_highlights": [
+            "En pleno Corso peatonal y Centro Histórico"
+          ],
+          "transit_proximity": "A 250 m llanos de la Estación Central de Salerno (Frecciarossa) y Molo Concordia"
+        }
+      },
+      {
+        "id": "sal_b_1",
+        "platform": "booking",
+        "name": "Salerno Centro Storico Grand Suite & Sea View (Apartamento 3 Dorms)",
+        "city_id": "salerno",
+        "property_type": "Apartamento histórico de lujo privado (3 dormitorios amplios)",
+        "neighborhood": "Centro Storico",
+        "address": "Via Mercanti, Salerno",
+        "price_per_night_eur": 330.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 3.0,
+        "rating": 9.5,
+        "review_count": 420,
+        "no_rooms": 1,
+        "privacy": "100% Privado (Uso exclusivo de la propiedad para las 3 células)",
+        "elevator_status": "Con Ascensor",
+        "transit_proximity": "A 550 m del Muelle de Ferries (Molo Manfredi / Concordia) a Amalfi y Positano",
+        "amenities": [
+          "Cocina completa",
+          "Cuna gratis",
+          "Balcones con vista mar",
+          "Ascensor",
+          "3 baños",
+          "AC"
+        ],
+        "baby_notes": "1 dormitorio con baño por cada célula familiar. Cuna sin coste y calle peatonal llana.",
+        "hotel_slug": "salerno-centro-b-b",
+        "country_code": "it",
+        "multiplatform": {
+          "google_hotels": "https://www.google.com/travel/hotels?q=Salerno+Centro+Storico+Grand+Suite+%26+Sea+View+salerno&dates=2027-09-24,2027-09-27&adults=7&hl=es",
+          "booking_direct": "https://www.booking.com/hotel/it/salerno-centro-b-b.es.html",
+          "booking_with_dates": "https://www.booking.com/hotel/it/salerno-centro-b-b.es.html?checkin=2027-09-24&checkout=2027-09-27&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "booking_search_prop": "https://www.booking.com/searchresults.es.html?ss=Salerno+Centro+Storico+Grand+Suite+%26+Sea+View+salerno&checkin=2027-09-24&checkout=2027-09-27&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "trivago": "https://www.trivago.es/es-ES/srl/alojamiento-salerno?search=100-200;dr-20270924-20270927;rc-1-7",
+          "official_web": ""
+        },
+        "url": "https://www.booking.com/hotel/it/salerno-centro-b-b.es.html?checkin=2027-09-24&checkout=2027-09-27&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "google_hotels_url": "https://www.google.com/travel/hotels?q=Salerno+Centro+Storico+Grand+Suite+%26+Sea+View+salerno&dates=2027-09-24,2027-09-27&adults=7&hl=es",
+        "booking_url": "https://www.booking.com/hotel/it/salerno-centro-b-b.es.html",
+        "booking_dates_url": "https://www.booking.com/hotel/it/salerno-centro-b-b.es.html?checkin=2027-09-24&checkout=2027-09-27&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "booking_search_prop_url": "https://www.booking.com/searchresults.es.html?ss=Salerno+Centro+Storico+Grand+Suite+%26+Sea+View+salerno&checkin=2027-09-24&checkout=2027-09-27&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "trivago_url": "https://www.trivago.es/es-ES/srl/alojamiento-salerno?search=100-200;dr-20270924-20270927;rc-1-7",
+        "link_type": "Apartamento Entero (3 Dorms / 1 por Célula) · Con Ascensor",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 3.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 330.0,
+          "total_stay_eur": 990.0,
+          "cost_person_night_8": 41.25,
+          "cost_person_night_9": 36.67,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 255.0,
+          "total_savings_stay_eur": 765.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": true,
+          "crib_status": "Cuna disponible GRATIS",
+          "family_amenities": [],
+          "baby_score": 9.0,
+          "notes": "En Booking se confirma cuna en el paso de reserva."
+        },
+        "location": {
+          "location_score": 9.0,
+          "strategic_highlights": [
+            "En pleno Corso peatonal y Centro Histórico"
+          ],
+          "transit_proximity": "A 550 m del Muelle de Ferries (Molo Manfredi / Concordia) a Amalfi y Positano"
+        }
+      },
+      {
+        "id": "sal_b_walkup",
+        "platform": "booking",
+        "name": "Dimora Storica Duomo & Mare Salerno (1° Piano Sin Ascensor - Máximo Ahorro)",
+        "city_id": "salerno",
+        "property_type": "Apartamento histórico señorial (3 dormitorios grandes con balcones)",
+        "neighborhood": "Centro Storico",
+        "address": "Via dei Mercanti / Duomo, Salerno",
+        "price_per_night_eur": 260.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 2.0,
+        "rating": 9.3,
+        "review_count": 390,
+        "no_rooms": 1,
+        "privacy": "100% Privado (Piso noble entero sin extraños)",
+        "elevator_status": "Sin Ascensor (1er Piso / 14 escalones)",
+        "transit_proximity": "A 450 m del Molo Concordia (ferries Amalfi) y 80 m de la Catedral",
+        "amenities": [
+          "Cocina completa",
+          "Cuna gratis",
+          "Balcones típicos",
+          "Lavadora",
+          "AC"
+        ],
+        "baby_notes": "Solo 14 escalones fáciles. Tarifa de €260/noche (€28,89/pax). Ahorro de €70/noche.",
+        "hotel_slug": "gran-suite-corso-vittorio-emanuele",
+        "country_code": "it",
+        "multiplatform": {
+          "google_hotels": "https://www.google.com/travel/hotels?q=Dimora+Storica+Duomo+%26+Mare+Salerno+salerno&dates=2027-09-24,2027-09-27&adults=7&hl=es",
+          "booking_direct": "https://www.booking.com/hotel/it/gran-suite-corso-vittorio-emanuele.es.html",
+          "booking_with_dates": "https://www.booking.com/hotel/it/gran-suite-corso-vittorio-emanuele.es.html?checkin=2027-09-24&checkout=2027-09-27&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "booking_search_prop": "https://www.booking.com/searchresults.es.html?ss=Dimora+Storica+Duomo+%26+Mare+Salerno+salerno&checkin=2027-09-24&checkout=2027-09-27&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+          "trivago": "https://www.trivago.es/es-ES/srl/alojamiento-salerno?search=100-200;dr-20270924-20270927;rc-1-7",
+          "official_web": ""
+        },
+        "url": "https://www.booking.com/hotel/it/gran-suite-corso-vittorio-emanuele.es.html?checkin=2027-09-24&checkout=2027-09-27&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "google_hotels_url": "https://www.google.com/travel/hotels?q=Dimora+Storica+Duomo+%26+Mare+Salerno+salerno&dates=2027-09-24,2027-09-27&adults=7&hl=es",
+        "booking_url": "https://www.booking.com/hotel/it/gran-suite-corso-vittorio-emanuele.es.html",
+        "booking_dates_url": "https://www.booking.com/hotel/it/gran-suite-corso-vittorio-emanuele.es.html?checkin=2027-09-24&checkout=2027-09-27&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "booking_search_prop_url": "https://www.booking.com/searchresults.es.html?ss=Dimora+Storica+Duomo+%26+Mare+Salerno+salerno&checkin=2027-09-24&checkout=2027-09-27&group_adults=7&group_children=2&age=4&age=1&no_rooms=1",
+        "trivago_url": "https://www.trivago.es/es-ES/srl/alojamiento-salerno?search=100-200;dr-20270924-20270927;rc-1-7",
+        "link_type": "Apartamento Entero (3 Dorms / 1 por Célula) · Sin Ascensor (1er Piso / 14 escalones)",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 2.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 260.0,
+          "total_stay_eur": 780.0,
+          "cost_person_night_8": 32.5,
+          "cost_person_night_9": 28.89,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 325.0,
+          "total_savings_stay_eur": 975.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": true,
+          "crib_status": "Cuna disponible GRATIS",
+          "family_amenities": [],
+          "baby_score": 9.0,
+          "notes": "En Booking se confirma cuna en el paso de reserva."
+        },
+        "location": {
+          "location_score": 9.0,
+          "strategic_highlights": [
+            "En pleno Corso peatonal y Centro Histórico"
+          ],
+          "transit_proximity": "A 450 m del Molo Concordia (ferries Amalfi) y 80 m de la Catedral"
+        }
+      },
+      {
+        "id": "sal_b_3",
+        "platform": "booking",
+        "name": "Hotel Montestella / Plaza Salerno (Opción Hotel: 3 Habitaciones Privadas)",
+        "city_id": "salerno",
+        "property_type": "Hotel 4 estrellas céntrico (3 habitaciones privadas con baño en suite)",
+        "neighborhood": "Corso Vittorio Emanuele",
+        "address": "Corso Vittorio Emanuele 156, Salerno",
+        "price_per_night_eur": 325.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 3.0,
+        "rating": 9.1,
+        "review_count": 980,
+        "no_rooms": 3,
+        "privacy": "100% Privado (3 habitaciones privadas de hotel en pleno bulevar peatonal)",
+        "elevator_status": "Con Ascensor",
+        "transit_proximity": "A 350 m de la Estación Central y a 450 m del Molo Concordia",
+        "amenities": [
+          "Desayuno incluido",
+          "Cuna para bebé",
+          "Ascensor",
+          "Recepción 24h",
+          "AC"
+        ],
+        "baby_notes": "Bulevar completamente plano y peatonal. Ideal para embarque matutino a Positano y Amalfi.",
+        "hotel_slug": "hotel-montestella-salerno",
+        "country_code": "it",
+        "multiplatform": {
+          "google_hotels": "https://www.google.com/travel/hotels?q=Hotel+Montestella+%2F+Plaza+Salerno+salerno&dates=2027-09-24,2027-09-27&adults=7&hl=es",
+          "booking_direct": "https://www.booking.com/hotel/it/hotel-montestella-salerno.es.html",
+          "booking_with_dates": "https://www.booking.com/hotel/it/hotel-montestella-salerno.es.html?checkin=2027-09-24&checkout=2027-09-27&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+          "booking_search_prop": "https://www.booking.com/searchresults.es.html?ss=Hotel+Montestella+%2F+Plaza+Salerno+salerno&checkin=2027-09-24&checkout=2027-09-27&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+          "trivago": "https://www.trivago.es/es-ES/srl/alojamiento-salerno?search=100-200;dr-20270924-20270927;rc-1-7",
+          "official_web": ""
+        },
+        "url": "https://www.booking.com/hotel/it/hotel-montestella-salerno.es.html?checkin=2027-09-24&checkout=2027-09-27&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+        "google_hotels_url": "https://www.google.com/travel/hotels?q=Hotel+Montestella+%2F+Plaza+Salerno+salerno&dates=2027-09-24,2027-09-27&adults=7&hl=es",
+        "booking_url": "https://www.booking.com/hotel/it/hotel-montestella-salerno.es.html",
+        "booking_dates_url": "https://www.booking.com/hotel/it/hotel-montestella-salerno.es.html?checkin=2027-09-24&checkout=2027-09-27&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+        "booking_search_prop_url": "https://www.booking.com/searchresults.es.html?ss=Hotel+Montestella+%2F+Plaza+Salerno+salerno&checkin=2027-09-24&checkout=2027-09-27&group_adults=7&group_children=2&age=4&age=1&no_rooms=3",
+        "trivago_url": "https://www.trivago.es/es-ES/srl/alojamiento-salerno?search=100-200;dr-20270924-20270927;rc-1-7",
+        "link_type": "Hotel Familiar (3 Habs Privadas / 1 por Célula) · Con Ascensor",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 3.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 325.0,
+          "total_stay_eur": 975.0,
+          "cost_person_night_8": 40.62,
+          "cost_person_night_9": 36.11,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 260.0,
+          "total_savings_stay_eur": 780.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": true,
+          "crib_status": "Cuna disponible GRATIS",
+          "family_amenities": [],
+          "baby_score": 9.0,
+          "notes": "En Booking se confirma cuna en el paso de reserva."
+        },
+        "location": {
+          "location_score": 9.0,
+          "strategic_highlights": [
+            "En pleno Corso peatonal y Centro Histórico"
+          ],
+          "transit_proximity": "A 350 m de la Estación Central y a 450 m del Molo Concordia"
+        }
+      },
+      {
+        "id": "sal_a_1",
+        "platform": "airbnb",
+        "name": "Attico sul Mare con Terrazza Panoramica nel Centro Storico (3 Dorms)",
+        "city_id": "salerno",
+        "property_type": "Ático con terraza al Golfo (3 dormitorios amplios)",
+        "neighborhood": "Centro Storico",
+        "address": "Via dei Mercanti / Via Roma, Salerno",
+        "price_per_night_eur": 315.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 2.5,
+        "rating": 4.96,
+        "review_count": 105,
+        "transit_proximity": "A 550 m llanos del Muelle de ferries (Molo Concordia) y 800 m de la Estación",
+        "amenities": [
+          "Cocina completa",
+          "Cuna de viaje",
+          "Trona",
+          "Terraza amueblada",
+          "Ascensor",
+          "AC"
+        ],
+        "baby_notes": "Vistas al mar y acceso directo a calles peatonales llanas con pizzerías y heladerías familiares.",
+        "search_term": "Centro Storico Salerno Italy",
+        "url": "https://www.airbnb.es/s/Centro+Storico+Salerno+Italy/homes?checkin=2027-09-24&checkout=2027-09-27&adults=7&children=1&infants=1&min_bedrooms=3&room_types%5B%5D=Entire+home%2Fapt&price_max=585",
+        "elevator_status": "Con Ascensor",
+        "link_type": "Airbnb Entero (3 Dorms / 1 por Célula) · Con Ascensor",
+        "privacy": "100% Privado (Alojamiento entero de uso exclusivo sin extraños)",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 2.5,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 315.0,
+          "total_stay_eur": 945.0,
+          "cost_person_night_8": 39.38,
+          "cost_person_night_9": 35.0,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 270.0,
+          "total_savings_stay_eur": 810.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": false,
+          "crib_status": "Cuna disponible (consultar suplemento/a petición)",
+          "family_amenities": [
+            "trona"
+          ],
+          "baby_score": 8.5,
+          "notes": "Airbnb no cobra tarifa adicional por bebés (< 2 años)."
+        },
+        "location": {
+          "location_score": 9.0,
+          "strategic_highlights": [
+            "En pleno Corso peatonal y Centro Histórico"
+          ],
+          "transit_proximity": "A 550 m llanos del Muelle de ferries (Molo Concordia) y 800 m de la Estación"
+        }
+      },
+      {
+        "id": "sal_a_2",
+        "platform": "airbnb",
+        "name": "Spazioso Appartamento sul Corso Pedonale vicino alla Stazione (3 Dorms)",
+        "city_id": "salerno",
+        "property_type": "Apartamento señorial en arteria peatonal (3 dormitorios)",
+        "neighborhood": "Corso Vittorio Emanuele",
+        "address": "Corso Vittorio Emanuele, Salerno",
+        "price_per_night_eur": 295.0,
+        "max_guests": 9,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 2.0,
+        "rating": 4.93,
+        "review_count": 82,
+        "transit_proximity": "A 200 m de la Estación de Salerno (Frecciarossa) y 350 m del Muelle de Ferries",
+        "amenities": [
+          "Cocina abierta",
+          "Cuna para bebé",
+          "Trona",
+          "Ascensor llano",
+          "AC"
+        ],
+        "baby_notes": "La mejor ubicación para llegar en tren de alta velocidad con las 3 maletas de 23kg y carritos sin usar taxi.",
+        "search_term": "Corso Vittorio Emanuele Salerno Italy",
+        "url": "https://www.airbnb.es/s/Corso+Vittorio+Emanuele+Salerno+Italy/homes?checkin=2027-09-24&checkout=2027-09-27&adults=7&children=1&infants=1&min_bedrooms=3&room_types%5B%5D=Entire+home%2Fapt&price_max=585",
+        "elevator_status": "Con Ascensor",
+        "link_type": "Airbnb Entero (3 Dorms / 1 por Célula) · Con Ascensor",
+        "privacy": "100% Privado (Alojamiento entero de uso exclusivo sin extraños)",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 9,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 2.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Óptimo para 9 personas"
+        },
+        "pricing": {
+          "price_per_night_eur": 295.0,
+          "total_stay_eur": 885.0,
+          "cost_person_night_8": 36.88,
+          "cost_person_night_9": 32.78,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 290.0,
+          "total_savings_stay_eur": 870.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": false,
+          "crib_status": "Cuna disponible (consultar suplemento/a petición)",
+          "family_amenities": [
+            "trona"
+          ],
+          "baby_score": 8.5,
+          "notes": "Airbnb no cobra tarifa adicional por bebés (< 2 años)."
+        },
+        "location": {
+          "location_score": 9.0,
+          "strategic_highlights": [
+            "En pleno Corso peatonal y Centro Histórico"
+          ],
+          "transit_proximity": "A 200 m de la Estación de Salerno (Frecciarossa) y 350 m del Muelle de Ferries"
+        }
+      },
+      {
+        "id": "sal_a_3",
+        "platform": "airbnb",
+        "name": "Casa Vacanze Lungomare Trieste & Molo Concordia (3 Dorms)",
+        "city_id": "salerno",
+        "property_type": "Apartamento frente al paseo marítimo (3 dormitorios)",
+        "neighborhood": "Lungomare Trieste / Puerto",
+        "address": "Lungomare Trieste, Salerno",
+        "price_per_night_eur": 285.0,
+        "max_guests": 10,
+        "bedrooms": 3,
+        "beds": 6,
+        "bathrooms": 2.0,
+        "rating": 4.91,
+        "review_count": 140,
+        "transit_proximity": "A 250 m del Molo Concordia (embarque ferries Travelmar a Amalfi y Positano)",
+        "amenities": [
+          "Cocina amplia",
+          "Cuna de bebé",
+          "Ascensor",
+          "Paseo marítimo plano a la puerta",
+          "AC"
+        ],
+        "baby_notes": "Paseo marítimo totalmente llano y arbolado frente al mar, ideal para caminar con Santiago al atardecer.",
+        "search_term": "Lungomare Trieste Salerno Italy",
+        "url": "https://www.airbnb.es/s/Lungomare+Trieste+Salerno+Italy/homes?checkin=2027-09-24&checkout=2027-09-27&adults=7&children=1&infants=1&min_bedrooms=3&room_types%5B%5D=Entire+home%2Fapt&price_max=585",
+        "elevator_status": "Con Ascensor",
+        "link_type": "Airbnb Entero (3 Dorms / 1 por Célula) · Con Ascensor",
+        "privacy": "100% Privado (Alojamiento entero de uso exclusivo sin extraños)",
+        "capacity": {
+          "passes_capacity": true,
+          "max_guests": 10,
+          "bedrooms": 3,
+          "beds": 6,
+          "bathrooms": 2.0,
+          "bed_distribution": "3 dormitorios, 6 camas",
+          "capacity_status": "Muy espacioso (hasta 10 huéspedes)"
+        },
+        "pricing": {
+          "price_per_night_eur": 285.0,
+          "total_stay_eur": 855.0,
+          "cost_person_night_8": 35.62,
+          "cost_person_night_9": 31.67,
+          "within_budget_8": true,
+          "within_budget_9": true,
+          "savings_per_night_eur": 300.0,
+          "total_savings_stay_eur": 900.0,
+          "budget_status": "Dentro del presupuesto"
+        },
+        "baby_policy": {
+          "has_crib": true,
+          "is_free_crib": false,
+          "crib_status": "Cuna disponible (consultar suplemento/a petición)",
+          "family_amenities": [],
+          "baby_score": 8.0,
+          "notes": "Airbnb no cobra tarifa adicional por bebés (< 2 años)."
+        },
+        "location": {
+          "location_score": 7.0,
+          "strategic_highlights": [
+            "Ubicación estratégica con acceso a transporte"
+          ],
+          "transit_proximity": "A 250 m del Molo Concordia (embarque ferries Travelmar a Amalfi y Positano)"
+        }
+      }
+    ]
+  }
+};
+const EUR_COP = 3636;
+
+function initDashboard() {
+    const tabsContainer = document.getElementById("tabs");
+    const sectionsContainer = document.getElementById("city-sections");
+    
+    DATA.cities.forEach((city, index) => {
+        const btn = document.createElement("button");
+        btn.className = `tab-btn ${index === 0 ? 'active' : ''}`;
+        btn.innerText = `${city.name} (${city.nights}N · ${city.checkin.slice(5)})`;
+        btn.onclick = () => switchTab(city.id);
+        btn.dataset.cityId = city.id;
+        tabsContainer.appendChild(btn);
+
+        const sec = document.createElement("div");
+        sec.id = `sec-${city.id}`;
+        sec.className = `city-content ${index === 0 ? 'active' : ''}`;
+        
+        const props = DATA.properties[city.id] || [];
+        
+        let cardsHtml = '';
+        props.forEach(p => {
+            const isBooking = p.platform === 'booking';
+            const totalCop = Math.round(p.pricing.total_stay_eur * EUR_COP).toLocaleString('es-CO');
+            const cellCop = Math.round((p.pricing.total_stay_eur * EUR_COP) / 3).toLocaleString('es-CO');
+            
+            cardsHtml += `
+                <div class="prop-card">
+                    <div class="card-top">
+                        <span class="platform-badge ${isBooking ? 'platform-booking' : 'platform-airbnb'}">
+                            ${isBooking ? 'Booking.com' : 'Airbnb'}
+                        </span>
+                        <span class="rating-badge">★ ${p.rating} (${p.review_count} reseñas)</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="prop-name">${p.name}</div>
+                        <div class="prop-zone">📍 ${p.neighborhood} · ${p.address}</div>
+                        
+                        <div class="specs-grid">
+                            <div class="spec-item">
+                                <div class="label">Capacidad</div>
+                                <div class="value">${p.capacity.max_guests} pers.</div>
+                            </div>
+                            <div class="spec-item">
+                                <div class="label">Privacidad</div>
+                                <div class="value">${p.capacity.bedrooms} Dorm/Hab</div>
+                            </div>
+                            <div class="spec-item">
+                                <div class="label">Camas/Baños</div>
+                                <div class="value">${p.capacity.beds}c / ${p.capacity.bathrooms}b</div>
+                            </div>
+                        </div>
+
+                        <div class="price-box">
+                            <div>
+                                <div class="price-main">${p.pricing.price_per_night_eur} € <span class="price-sub">/ noche</span></div>
+                                <div class="price-sub">Total ${city.nights}N: <strong>${p.pricing.total_stay_eur} €</strong> (~$${totalCop} COP)</div>
+                                <div class="price-sub" style="color:#0f766e; font-weight:700;">Por Célula (${city.nights}N): ~$${cellCop} COP</div>
+                            </div>
+                            <div class="per-person">
+                                <div><strong>${p.pricing.cost_person_night_9} €</strong> /pax/noche (9p)</div>
+                                <div class="price-sub">${p.pricing.cost_person_night_8} € /pax (8p)</div>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 4px;">
+                            ${p.pricing.within_budget_9 
+                                ? '<span class="feature-tag" style="background:#dcfce7; color:#15803d; font-weight:700; border:1px solid #86efac;">✅ Cumple Tope: &le; 65 €/pax/noche</span>' 
+                                : '<span class="feature-tag" style="background:#fee2e2; color:#991b1b; font-weight:700; border:1px solid #fca5a5;">⚠️ Supera 65 €/pax/noche</span>'}
+                            <span class="feature-tag" style="background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; font-weight:600;">🔒 ${p.privacy || '100% Privado'}</span>
+                            <span class="feature-tag" style="background:#f1f5f9; color:#0f172a; border:1px solid #cbd5e1; font-weight:700;">🛗 ${p.elevator_status || 'Con Ascensor'}</span>
+                        </div>
+
+                        <div>
+                            <span class="feature-tag tag-baby">👶 ${p.baby_policy.crib_status}</span>
+                            <span class="feature-tag tag-transit">🚇 ${p.location.transit_proximity}</span>
+                            <span class="feature-tag tag-direct">🔗 ${p.link_type || 'Enlace Directo'}</span>
+                        </div>
+
+                        <div class="baby-box">
+                            <strong>Logística Familiar (3 Células):</strong> ${p.baby_notes}
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        ${isBooking ? `
+                            <a href="${p.booking_dates_url || p.url}" target="_blank" rel="noopener" class="btn-link btn-booking">
+                                🏨 Abrir Ficha en Booking con Fechas (${city.checkin} al ${city.checkout}) ↗
+                            </a>
+                            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                                <a href="${p.booking_search_prop_url || p.booking_dates_url}" target="_blank" rel="noopener" class="btn-link" style="background:#1d4ed8; font-size:12px; padding:8px 10px; flex:1; min-width:130px;">
+                                    🔍 Buscar en Booking (9 Pax) ↗
+                                </a>
+                                <a href="${p.google_hotels_url}" target="_blank" rel="noopener" class="btn-link" style="background:#1a73e8; font-size:12px; padding:8px 10px; flex:1; min-width:130px;">
+                                    🌟 Google Hotels & Mapa ↗
+                                </a>
+                            </div>
+                        ` : `
+                            <a href="${p.url}" target="_blank" rel="noopener" class="btn-link btn-airbnb">
+                                🏠 Ver Apartamento 3+ Dorms en Airbnb (${city.checkin} al ${city.checkout}) ↗
+                            </a>
+                        `}
+                    </div>
+                </div>
+            `;
+        });
+
+        const liveUrls = city.live_search_urls || {};
+
+        sec.innerHTML = `
+            <div class="city-header" style="flex-direction: column; align-items: flex-start; gap: 14px;">
+                <div style="width: 100%; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <div class="city-title">${city.name}, ${city.country} — Check-in: ${city.checkin} | Check-out: ${city.checkout} (${city.nights} noches)</div>
+                        <div class="city-meta"><strong>Barrios Clave:</strong> ${city.target_neighborhoods.join(', ')} | <strong>Transporte:</strong> ${city.key_transit.join(', ')}</div>
+                    </div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <span class="feature-tag" style="background:#f0fdf4; color:#166534; font-weight:700; border:1px solid #86efac; font-size:13px; padding:6px 12px;">🔒 3 Dorms / 3 Habs Privadas (Cero Extraños)</span>
+                        <span class="feature-tag tag-baby" style="font-size: 13px; padding: 6px 12px;">Tope: ≤ 65 €/pax/noche (máx 585 €/noche)</span>
+                    </div>
+                </div>
+
+                <!-- BOTONES DE BÚSQUEDA EN VIVO PARAMETRIZADOS -->
+                <div style="width: 100%; background: #f8fafc; border: 1px dashed #94a3b8; border-radius: 10px; padding: 14px 16px;">
+                    <div style="font-size: 12.5px; font-weight: 800; color: #1e293b; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+                        <span>🔎 Buscadores en Vivo con Fechas Exactas (${city.checkin} → ${city.checkout} · 7 Adultos + 2 Niños [4 y 1 año]):</span>
+                    </div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <a href="${liveUrls.booking_apartments_3br || '#'}" target="_blank" rel="noopener" style="background:#003580; color:white; font-size:12.5px; font-weight:700; padding:8px 14px; border-radius:8px; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                            🏢 Booking: Apartamentos Enteros (3 Dormitorios) ↗
+                        </a>
+                        <a href="${liveUrls.booking_hotels_3rooms || '#'}" target="_blank" rel="noopener" style="background:#1d4ed8; color:white; font-size:12.5px; font-weight:700; padding:8px 14px; border-radius:8px; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                            🏨 Booking: Hoteles (3 Habitaciones Privadas / 1 por Célula) ↗
+                        </a>
+                        <a href="${liveUrls.booking_apartments_entire || '#'}" target="_blank" rel="noopener" style="background:#0f766e; color:white; font-size:12.5px; font-weight:700; padding:8px 14px; border-radius:8px; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                            🏡 Booking: Todas las Propiedades Privadas ↗
+                        </a>
+                        <a href="${liveUrls.airbnb_apartments_3br || '#'}" target="_blank" rel="noopener" style="background:#ff385c; color:white; font-size:12.5px; font-weight:700; padding:8px 14px; border-radius:8px; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                            🏠 Airbnb: Casas/Aptos Enteros (Mín. 3 Dorms · ≤585€) ↗
+                        </a>
+                        <a href="${liveUrls.google_hotels_city || '#'}" target="_blank" rel="noopener" style="background:#1a73e8; color:white; font-size:12.5px; font-weight:700; padding:8px 14px; border-radius:8px; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                            🌟 Google Hotels: Mapa & Tarifas ${city.name} ↗
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="cards-grid">
+                ${cardsHtml}
+            </div>
+        `;
+        sectionsContainer.appendChild(sec);
+    });
+}
+
+function switchTab(cityId) {
+    document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.cityId === cityId);
+    });
+    document.querySelectorAll('.city-content').forEach(s => {
+        s.classList.toggle('active', s.id === `sec-${cityId}`);
+    });
+}
+
+window.onload = initDashboard;
+</script>
+</body>
+</html>
