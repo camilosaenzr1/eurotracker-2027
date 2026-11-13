@@ -3,38 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pipeline de Alojamientos — EuroTracker Septiembre 2027</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Alojamientos & Seguimiento de Links — EuroTracker 2027</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #1e3a8a;
-            --primary-light: #3b82f6;
-            --secondary: #0d9488;
-            --accent: #f97316;
-            --booking-blue: #003580;
-            --airbnb-coral: #ff385c;
-            --bg: #f8fafc;
-            --card-bg: #ffffff;
+            --bg-page: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-subtle: #f1f5f9;
+            --bg-warm: #fcfbf9;
             --text-main: #0f172a;
+            --text-secondary: #334155;
             --text-muted: #64748b;
             --border: #e2e8f0;
-            --badge-green: #dcfce7;
-            --badge-green-text: #166534;
+            --border-strong: #cbd5e1;
+            --primary: #1e293b;
+            --accent-navy: #1e3a8a;
+            --accent-teal: #0f766e;
+            --accent-emerald: #15803d;
+            --accent-amber: #b45309;
+            --booking-blue: #003580;
+            --airbnb-coral: #e11d48;
+            --radius-lg: 14px;
+            --radius-md: 10px;
+            --radius-sm: 8px;
+            --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.04);
+            --shadow-md: 0 4px 14px rgba(15, 23, 42, 0.05);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--bg);
+            background-color: var(--bg-page);
             color: var(--text-main);
-            line-height: 1.5;
-            padding-bottom: 60px;
+            line-height: 1.55;
+            padding-bottom: 80px;
+            -webkit-font-smoothing: antialiased;
         }
+
+        /* HEADER SERENO & EDITORIAL */
         header {
-            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
-            color: white;
-            padding: 28px 24px 40px;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            background: #ffffff;
+            border-bottom: 1px solid var(--border);
+            padding: 20px 24px 28px;
         }
         .top-nav {
             max-width: 1280px;
@@ -43,7 +52,26 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 12px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--bg-subtle);
+        }
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: var(--bg-subtle);
+            padding: 6px 12px;
+            border-radius: 999px;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
         }
         .nav-links {
             display: flex;
@@ -52,306 +80,781 @@
         }
         .nav-btn {
             text-decoration: none;
-            color: #f8fafc;
-            background: rgba(255,255,255,0.12);
-            border: 1px solid rgba(255,255,255,0.25);
+            color: var(--text-secondary);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-strong);
             padding: 7px 14px;
-            border-radius: 999px;
+            border-radius: 8px;
             font-size: 13px;
             font-weight: 600;
-            transition: all 0.2s;
+            transition: all 0.15s ease;
         }
-        .nav-btn:hover { background: rgba(255,255,255,0.22); }
-        header h1 { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
-        header p { color: #cbd5e1; font-size: 15px; max-width: 900px; margin: 0 auto; }
-        
+        .nav-btn:hover {
+            background: var(--bg-subtle);
+            color: var(--text-main);
+        }
+        .header-main {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        header h1 {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+        }
+        header p {
+            color: var(--text-muted);
+            font-size: 14px;
+            max-width: 820px;
+        }
+
         .container {
             max-width: 1280px;
-            margin: -24px auto 0;
+            margin: 24px auto 0;
             padding: 0 20px;
         }
-        
-        .alert-banner {
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            border-left: 5px solid #2563eb;
-            border-radius: 10px;
-            padding: 16px 20px;
-            margin-bottom: 18px;
-            font-size: 13.5px;
-            color: #1e3a8a;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
-        }
-        .alert-banner strong { font-weight: 700; }
 
+        /* KPI BAR LIMPIA */
         .kpi-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
+            gap: 14px;
+            margin-bottom: 20px;
         }
         .kpi-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 18px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            background: var(--bg-surface);
+            border-radius: var(--radius-md);
+            padding: 16px 18px;
             border: 1px solid var(--border);
-            text-align: center;
+            box-shadow: var(--shadow-sm);
         }
-        .kpi-title { font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 6px; }
-        .kpi-value { font-size: 23px; font-weight: 800; color: var(--primary); }
-        .kpi-sub { font-size: 12px; color: #10b981; margin-top: 4px; font-weight: 600; }
+        .kpi-title {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .kpi-value {
+            font-size: 21px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+        .kpi-sub {
+            font-size: 12px;
+            color: var(--accent-teal);
+            margin-top: 3px;
+            font-weight: 600;
+        }
 
-        .tabs {
-            display: flex;
-            gap: 8px;
-            background: #e2e8f0;
-            padding: 6px;
-            border-radius: 12px;
+        /* COLLAPSIBLE NOTES (CERO RUIDO, 100% INFORMACIÓN) */
+        .calm-drawer {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
             margin-bottom: 24px;
-            overflow-x: auto;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
         }
-        .tab-btn {
-            flex: 1;
-            padding: 12px 18px;
-            border: none;
-            background: transparent;
+        .calm-drawer summary {
+            padding: 13px 18px;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-warm);
+            user-select: none;
+        }
+        .calm-drawer summary::-webkit-details-marker { display: none; }
+        .calm-drawer summary:hover { background: var(--bg-subtle); }
+        .calm-drawer-body {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px;
+            background: var(--bg-surface);
+        }
+        .drawer-box {
+            background: var(--bg-page);
+            border: 1px solid var(--border);
             border-radius: 8px;
-            font-size: 14px;
+            padding: 12px 14px;
+        }
+        .drawer-box strong { color: var(--text-main); }
+
+        /* =====================================================================
+           MÓDULO INTERACTIVO: MIS HOTELES PREVISTOS & MONITOREADOS (WATCHLIST)
+           ===================================================================== */
+        .watchlist-section {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-lg);
+            padding: 22px 24px;
+            margin-bottom: 28px;
+            box-shadow: var(--shadow-md);
+        }
+        .watchlist-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+        .watchlist-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .watchlist-sub {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+        .watchlist-summary-pills {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .w-pill {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            padding: 7px 12px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .w-pill strong {
+            color: var(--text-main);
+            font-weight: 800;
+        }
+
+        /* FORMULARIO PARA AGREGAR LINKS */
+        .add-link-form {
+            background: var(--bg-page);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-bottom: 18px;
+        }
+        .form-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 2.2fr 1.1fr 1.4fr 0.9fr 0.9fr 1.2fr auto;
+            gap: 10px;
+            align-items: end;
+        }
+        @media (max-width: 1024px) {
+            .form-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
+        }
+        .form-group label {
+            display: block;
+            font-size: 11px;
             font-weight: 700;
             color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 9px 11px;
+            font-size: 13px;
+            border: 1px solid var(--border-strong);
+            border-radius: 7px;
+            background: #ffffff;
+            color: var(--text-main);
+            font-family: inherit;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-navy);
+            box-shadow: 0 0 0 2px rgba(30, 58, 138, 0.1);
+        }
+        .btn-add-watch {
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s ease;
             white-space: nowrap;
+            height: 37px;
+            transition: background 0.15s;
         }
-        .tab-btn.active {
-            background: white;
-            color: var(--primary);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-        }
-        .tab-btn:hover:not(.active) { color: var(--text-main); }
+        .btn-add-watch:hover { background: var(--accent-navy); }
 
-        .city-header {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
+        /* TABLA / TARJETAS DE HOTELES MONITOREADOS */
+        .watched-table-wrap {
+            overflow-x: auto;
+        }
+        .watched-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .watched-table th {
+            text-align: left;
+            padding: 10px 12px;
+            background: var(--bg-subtle);
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            border-bottom: 1px solid var(--border);
+        }
+        .watched-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--bg-subtle);
+            vertical-align: middle;
+        }
+        .watched-table tr:hover td {
+            background: #fcfcfd;
+        }
+        .status-select {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid var(--border-strong);
+            background: #ffffff;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+        .btn-table-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent-navy);
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            padding: 5px 10px;
+            border-radius: 6px;
+        }
+        .btn-table-link:hover { background: #dbeafe; }
+        .btn-table-del {
+            background: transparent;
             border: 1px solid var(--border);
-            margin-bottom: 20px;
+            color: var(--text-muted);
+            padding: 5px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .btn-table-del:hover {
+            background: #fef2f2;
+            color: #dc2626;
+            border-color: #fecaca;
+        }
+
+        /* PESTAÑAS DE CIUDADES */
+        .section-heading-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
             gap: 12px;
+            margin-bottom: 14px;
         }
-        .city-title { font-size: 20px; font-weight: 800; color: var(--text-main); }
-        .city-meta { font-size: 14px; color: var(--text-muted); margin-top: 4px; }
+        .tabs {
+            display: flex;
+            gap: 6px;
+            background: var(--bg-subtle);
+            padding: 5px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            background: transparent;
+            border-radius: 7px;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+        .tab-btn.active {
+            background: var(--bg-surface);
+            color: var(--text-main);
+            font-weight: 700;
+            box-shadow: var(--shadow-sm);
+        }
+        .tab-btn:hover:not(.active) { color: var(--text-main); }
 
+        /* CABECERA DE CIUDAD & BUSCADORES LIMPIOS */
+        .city-header {
+            background: var(--bg-surface);
+            border-radius: var(--radius-md);
+            padding: 18px 20px;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+        .city-title { font-size: 18px; font-weight: 800; color: var(--text-main); }
+        .city-meta { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+
+        .live-search-bar {
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid var(--bg-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .live-search-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+        .live-search-pills {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .search-pill {
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 7px;
+            border: 1px solid var(--border-strong);
+            color: var(--text-secondary);
+            background: var(--bg-page);
+            transition: all 0.15s;
+        }
+        .search-pill:hover {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+
+        /* TARJETAS DE PROPIEDADES (SERENAS Y ORDENADAS) */
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 18px;
         }
         .prop-card {
-            background: var(--card-bg);
-            border-radius: 14px;
+            background: var(--bg-surface);
+            border-radius: var(--radius-md);
             border: 1px solid var(--border);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            box-shadow: var(--shadow-sm);
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: border-color 0.15s, box-shadow 0.15s;
         }
         .prop-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            border-color: var(--border-strong);
+            box-shadow: var(--shadow-md);
         }
         .card-top {
-            padding: 14px 20px;
-            border-bottom: 1px solid #f1f5f9;
+            padding: 12px 18px;
+            border-bottom: 1px solid var(--bg-subtle);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: var(--bg-warm);
         }
         .platform-badge {
             font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
-            padding: 4px 10px;
-            border-radius: 20px;
-            color: white;
-        }
-        .platform-booking { background-color: var(--booking-blue); }
-        .platform-airbnb { background-color: var(--airbnb-coral); }
-        .rating-badge {
-            font-size: 13px;
-            font-weight: 700;
-            color: #047857;
-            background: #d1fae5;
-            padding: 3px 8px;
+            letter-spacing: 0.03em;
+            padding: 3px 9px;
             border-radius: 6px;
+        }
+        .platform-booking { background: #eff6ff; color: var(--booking-blue); border: 1px solid #bfdbfe; }
+        .platform-airbnb { background: #fff1f2; color: var(--airbnb-coral); border: 1px solid #fecdd3; }
+        .rating-badge {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--text-secondary);
         }
 
         .card-body {
-            padding: 20px;
+            padding: 18px;
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 12px;
         }
         .prop-name {
-            font-size: 17px;
+            font-size: 16px;
             font-weight: 700;
             color: var(--text-main);
-            line-height: 1.3;
+            line-height: 1.35;
         }
         .prop-zone {
-            font-size: 13px;
-            color: var(--secondary);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 4px;
+            font-size: 12.5px;
+            color: var(--text-muted);
+            font-weight: 500;
         }
 
         .specs-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            background: #f8fafc;
+            background: var(--bg-page);
             border-radius: 8px;
-            padding: 10px;
+            padding: 8px 10px;
             text-align: center;
             gap: 6px;
-            border: 1px solid #f1f5f9;
+            border: 1px solid var(--border);
         }
-        .spec-item .label { font-size: 11px; color: var(--text-muted); }
-        .spec-item .value { font-size: 13px; font-weight: 700; color: var(--text-main); }
+        .spec-item .label { font-size: 10.5px; color: var(--text-muted); text-transform: uppercase; }
+        .spec-item .value { font-size: 12.5px; font-weight: 700; color: var(--text-main); }
 
         .price-box {
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            border-radius: 10px;
-            padding: 12px 14px;
+            background: var(--bg-page);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 11px 14px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .price-main { font-size: 20px; font-weight: 800; color: var(--primary); }
+        .price-main { font-size: 18px; font-weight: 800; color: var(--text-main); }
         .price-sub { font-size: 12px; color: var(--text-muted); }
-        .per-person { text-align: right; font-size: 12px; }
-        .per-person strong { font-size: 14px; color: #166534; }
+        .per-person { text-align: right; font-size: 12px; color: var(--text-secondary); }
+        .per-person strong { font-size: 13.5px; color: var(--accent-emerald); }
 
+        .tags-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
         .feature-tag {
-            display: inline-block;
             font-size: 11px;
             font-weight: 600;
-            padding: 4px 8px;
+            padding: 3px 8px;
             border-radius: 6px;
-            margin-right: 4px;
-            margin-bottom: 4px;
+            background: var(--bg-subtle);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
         }
-        .tag-baby { background: var(--badge-green); color: var(--badge-green-text); }
-        .tag-transit { background: #e0e7ff; color: #3730a3; }
-        .tag-safe { background: #fef3c7; color: #92400e; }
-        .tag-direct { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+        .tag-ok { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
+        .tag-warn { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
+
+        .baby-box {
+            font-size: 12px;
+            color: var(--text-secondary);
+            background: var(--bg-warm);
+            border-left: 3px solid var(--border-strong);
+            padding: 8px 10px;
+            border-radius: 0 6px 6px 0;
+        }
 
         .card-footer {
-            padding: 16px 20px;
-            background: #f8fafc;
-            border-top: 1px solid #f1f5f9;
+            padding: 14px 18px;
+            background: var(--bg-page);
+            border-top: 1px solid var(--border);
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
+        .footer-primary-row {
+            display: flex;
+            gap: 8px;
+        }
         .btn-link {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             text-decoration: none;
-            color: white;
-            font-size: 13px;
-            font-weight: 700;
-            padding: 10px 14px;
-            border-radius: 8px;
-            transition: all 0.2s;
-            width: 100%;
+            font-size: 12.5px;
+            font-weight: 600;
+            padding: 9px 12px;
+            border-radius: 7px;
+            transition: all 0.15s;
+            cursor: pointer;
             text-align: center;
         }
-        .btn-booking { background: var(--booking-blue); }
-        .btn-booking:hover { background: #00224f; }
-        .btn-airbnb { background: var(--airbnb-coral); }
-        .btn-airbnb:hover { background: #e00b41; }
-
-        .baby-box {
-            font-size: 12px;
-            color: #334155;
-            background: #f0fdf4;
-            border-left: 3px solid #22c55e;
-            padding: 8px 10px;
-            border-radius: 0 6px 6px 0;
+        .btn-primary-open {
+            flex: 1.3;
+            background: var(--primary);
+            color: #ffffff;
+            border: 1px solid var(--primary);
         }
-        
+        .btn-primary-open:hover { background: var(--accent-navy); }
+        .btn-pin-watch {
+            flex: 1;
+            background: #ffffff;
+            color: var(--text-main);
+            border: 1px solid var(--border-strong);
+        }
+        .btn-pin-watch:hover {
+            background: #f0fdf4;
+            border-color: #86efac;
+            color: #166534;
+        }
+        .footer-secondary-row {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-sec-link {
+            flex: 1;
+            font-size: 11.5px;
+            color: var(--text-muted);
+            text-decoration: none;
+            text-align: center;
+            padding: 5px 8px;
+            border-radius: 6px;
+            background: #ffffff;
+            border: 1px solid var(--border);
+        }
+        .btn-sec-link:hover {
+            color: var(--text-main);
+            border-color: var(--border-strong);
+        }
+
         .city-content { display: none; }
         .city-content.active { display: block; }
+
+        .toast-msg {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--primary);
+            color: #ffffff;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 8px 24px rgba(15,23,42,0.18);
+            z-index: 9999;
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
+            transition: all 0.2s ease;
+        }
+        .toast-msg.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
 
 <header>
     <div class="top-nav">
-        <div style="font-size:13px; font-weight:700; color:#93c5fd;">
-            🟢 PIPELINE ACTIVO · Actualizado al 12 de Noviembre de 2026 (TRM: $3,636 COP/EUR)
+        <div class="status-pill">
+            <span class="status-dot"></span>
+            <span>Pipeline Activo · Actualizado al 12 de Noviembre de 2026 · TRM: $3,636 COP/EUR</span>
         </div>
         <div class="nav-links">
-            <a href="./index.html" class="nav-btn">🖥️ Volver al Tablero Financiero Web</a>
+            <a href="./index.html" class="nav-btn">← Volver al Tablero Financiero Web</a>
             <a href="./app.html" class="nav-btn">📱 Abrir Mobile App</a>
         </div>
     </div>
-    <h1>Explorador y Comparador de Alojamientos — Europa Septiembre 2027</h1>
-    <p>3 Células Familiares (7 adultos + Sofía 4a + Santiago 21m) | Regla: <strong>3 Dormitorios o 3 Habitaciones Privadas (Cero Extraños)</strong> | Tope: ≤ 65 € / pax / noche (máx 585 € / noche)</p>
+    <div class="header-main">
+        <div>
+            <h1>Alojamientos & Seguimiento de Hoteles Previstos</h1>
+            <p>3 Células Familiares (7 adultos + Sofía 4a + Santiago 21m) · Regla: <strong>3 Dormitorios o 3 Habitaciones Privadas (Cero Extraños)</strong> · Tope: ≤ 65 € / pax / noche (máx 585 € / noche)</p>
+        </div>
+    </div>
 </header>
 
 <div class="container">
-    <div class="alert-banner">
-        <strong>📌 Estado de Disponibilidad a Hoy (12 de Noviembre de 2026 — A 302 días del viaje):</strong><br>
-        1. <strong>Regla de 3 Células Familiares Aplicada:</strong> Todos los enlaces están calibrados para <strong>3 dormitorios privados</strong> (en apartamentos enteros) o <strong>3 habitaciones privadas independientes</strong> (en hoteles, 1 por cada célula familiar), eliminando el filtro antiguo de 4 dormitorios que encarecía y restringía la búsqueda.<br>
-        2. <strong>Enlaces Profundos con Fechas y Huéspedes Inyectados:</strong> Cada tarjeta tiene botones directos a <strong>Booking.com (con tus fechas y 9 pasajeros)</strong>, <strong>Búsqueda Directa en Booking</strong>, <strong>Google Hotels (comparador de tarifas y mapa)</strong> y <strong>Airbnb (3+ dormitorios enteros)</strong>.
-    </div>
 
-    <div class="alert-banner" style="background:#f0fdf4; border-color:#86efac; border-left-color:#16a34a; color:#14532d;">
-        <strong>🪜 Comparativa en Cada Ciudad: Con Ascensor vs. Planta Baja / 1er Piso Sin Ascensor</strong><br>
-        • En cada pestaña encontrarás tanto opciones con <strong>🛗 Ascensor garantizado</strong> como alternativas en <strong>🪜 Planta Baja (cero escalones) o 1er Piso (14–18 escalones)</strong>.<br>
-        • Elegir una planta baja o 1er piso en centros históricos como Eixample, Barrio Latino, Altstadt o Rione Monti ahorra entre <strong>€70 y €135 por noche</strong> (hasta <strong>€1,430 EUR / ~$5.20M COP</strong> en las 16 noches).
-    </div>
-
+    <!-- KPI RESUMEN -->
     <div class="kpi-grid">
         <div class="kpi-card">
-            <div class="kpi-title">Configuración Grupo</div>
+            <div class="kpi-title">Configuración Familiar</div>
             <div class="kpi-value">3 Células (9 Pax)</div>
             <div class="kpi-sub">3 Dorms o 3 Habs Privadas</div>
         </div>
         <div class="kpi-card">
-            <div class="kpi-title">Presupuesto Base 16N</div>
+            <div class="kpi-title">Presupuesto Base (16N)</div>
             <div class="kpi-value">€7,760 EUR</div>
-            <div class="kpi-sub">+ €525 Tasas = $30.12M COP</div>
+            <div class="kpi-sub">+ €525 Tasas = $30,124,260 COP</div>
         </div>
         <div class="kpi-card">
-            <div class="kpi-title">Costo por Célula (16N)</div>
+            <div class="kpi-title">Costo Base por Célula</div>
             <div class="kpi-value">$10,041,420 COP</div>
             <div class="kpi-sub">€2,761.67 EUR (Tasas incl.)</div>
         </div>
         <div class="kpi-card">
-            <div class="kpi-title">Opciones Verificadas</div>
-            <div class="kpi-value">35 Propiedades</div>
-            <div class="kpi-sub">+ 25 Buscadores en Vivo</div>
+            <div class="kpi-title">Total Hoteles Monitoreados</div>
+            <div class="kpi-value" id="kpi-watched-total">€7,375 EUR</div>
+            <div class="kpi-sub" id="kpi-watched-diff">Ahorro vs Base: -€385 EUR</div>
         </div>
     </div>
 
-    <div class="tabs" id="tabs">
-        <!-- Generado por JS -->
+    <!-- NOTAS METODOLÓGICAS EN GAVETA DESPLEGABLE (CERO RUIDO VISUAL, 100% CONTENIDO) -->
+    <details class="calm-drawer">
+        <summary>
+            <span>ℹ️ Notas de Disponibilidad (12 Nov 2026), Regla de 3 Células y Comparativa Ascensor vs. Planta Baja / 1er Piso</span>
+            <span style="font-size:12px; color:var(--text-muted);">Mostrar / Ocultar detalles ▾</span>
+        </summary>
+        <div class="calm-drawer-body">
+            <div class="drawer-box">
+                <strong>📌 Estado de Disponibilidad a Hoy (A 302 días del viaje):</strong><br>
+                1. <strong>Regla de 3 Células Familiares Aplicada:</strong> Todos los enlaces están calibrados para <strong>3 dormitorios privados</strong> (en apartamentos enteros) o <strong>3 habitaciones privadas independientes</strong> (en hoteles, 1 por cada célula familiar), eliminando el filtro antiguo de 4 dormitorios que encarecía y restringía la búsqueda.<br>
+                2. <strong>Enlaces Profundos con Fechas y Huéspedes Inyectados:</strong> Cada tarjeta tiene botones directos a <strong>Booking.com (con tus fechas y 9 pasajeros)</strong>, <strong>Búsqueda Directa en Booking</strong>, <strong>Google Hotels (comparador de tarifas y mapa)</strong> y <strong>Airbnb (3+ dormitorios enteros)</strong>.
+            </div>
+            <div class="drawer-box">
+                <strong>🪜 Comparativa en Cada Ciudad: Con Ascensor vs. Planta Baja / 1er Piso Sin Ascensor:</strong><br>
+                • En cada pestaña encontrarás tanto opciones con <strong>🛗 Ascensor garantizado</strong> como alternativas en <strong>🪜 Planta Baja (cero escalones) o 1er Piso (14–18 escalones)</strong>.<br>
+                • Elegir una planta baja o 1er piso en centros históricos como Eixample, Barrio Latino, Altstadt o Rione Monti ahorra entre <strong>€70 y €135 por noche</strong> (hasta <strong>€1,430 EUR / ~$5.20M COP</strong> en las 16 noches).
+            </div>
+        </div>
+    </details>
+
+    <!-- =====================================================================
+         SECCIÓN PRINCIPAL: MIS HOTELES PREVISTOS & EN SEGUIMIENTO (WATCHLIST)
+         ===================================================================== -->
+    <section class="watchlist-section" id="watchlist-section">
+        <div class="watchlist-header">
+            <div>
+                <div class="watchlist-title">
+                    <span>📌 Mis Hoteles Previstos & En Seguimiento</span>
+                    <span id="watched-count-badge" style="font-size:12px; background:var(--bg-subtle); padding:2px 9px; border-radius:999px; font-weight:700; color:var(--text-secondary);">5 hoteles</span>
+                </div>
+                <div class="watchlist-sub">
+                    Agrega aquí los links de Booking, Airbnb o Google Hotels que ya tienes vistos para monitorear su precio y estado por ciudad. También puedes fijar cualquiera de las 35 opciones de abajo con 1 clic.
+                </div>
+            </div>
+            <div class="watchlist-summary-pills">
+                <div class="w-pill">Suma 5 Ciudades: <strong id="w-sum-eur">€7,375 EUR</strong> (<span id="w-sum-cop">$26,815,500 COP</span>)</div>
+                <div class="w-pill">Por Célula (1/3): <strong id="w-cell-cop">$8,938,500 COP</strong></div>
+                <button onclick="resetDefaultWatchlist()" class="btn-table-del" title="Restaurar los 5 hoteles base sugeridos">↺ Restaurar Base</button>
+            </div>
+        </div>
+
+        <!-- FORMULARIO PARA AGREGAR LINK -->
+        <div class="add-link-form">
+            <div class="form-title">
+                <span>➕ Agregar Link de Hotel o Apartamento Previsto</span>
+                <span style="font-size:11.5px; font-weight:500; color:var(--text-muted);">Si dejas el nombre vacío, lo extraemos automáticamente del link</span>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Link (Booking / Airbnb / Google Hotels)</label>
+                    <input type="url" id="w-url" class="form-control" placeholder="https://www.booking.com/hotel/..." oninput="autoFillFromUrl(this.value)">
+                </div>
+                <div class="form-group">
+                    <label>Ciudad (Noches)</label>
+                    <select id="w-city" class="form-control" onchange="recalcFormTotal()">
+                        <option value="barcelona" data-nights="2">🇪🇸 Barcelona (2N · 11-13 Sep)</option>
+                        <option value="paris" data-nights="4">🇫🇷 París (4N · 13-17 Sep)</option>
+                        <option value="zurich" data-nights="2">🇨🇭 Zúrich (2N · 17-19 Sep)</option>
+                        <option value="roma" data-nights="5">🇮🇹 Roma (5N · 19-24 Sep)</option>
+                        <option value="salerno" data-nights="3">🌊 Salerno (3N · 24-27 Sep)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Nombre del Alojamiento</label>
+                    <input type="text" id="w-name" class="form-control" placeholder="Ej. Citadines Bastille 3 Habs">
+                </div>
+                <div class="form-group">
+                    <label>€/Noche (Grupo)</label>
+                    <input type="number" id="w-night-eur" class="form-control" placeholder="430" oninput="onNightPriceInput()">
+                </div>
+                <div class="form-group">
+                    <label>Total Estadía (€)</label>
+                    <input type="number" id="w-total-eur" class="form-control" placeholder="860" oninput="onTotalPriceInput()">
+                </div>
+                <div class="form-group">
+                    <label>Estado & Notas</label>
+                    <select id="w-status" class="form-control">
+                        <option value="Candidato Favorito ⭐">⭐ Candidato Favorito</option>
+                        <option value="En Seguimiento 👁️">👁️ En Seguimiento</option>
+                        <option value="Reservado (Cancelación Gratis) ✅">✅ Reservado (Cancelación Gratis)</option>
+                        <option value="Alternativa Backup 🔄">🔄 Alternativa Backup</option>
+                    </select>
+                </div>
+                <div>
+                    <button type="button" class="btn-add-watch" onclick="addHotelToWatchlist()">+ Guardar Link</button>
+                </div>
+            </div>
+            <div style="margin-top:8px; display:flex; gap:10px; flex-wrap:wrap;">
+                <input type="text" id="w-notes" class="form-control" style="flex:1; font-size:12px; padding:6px 10px;" placeholder="Nota opcional: Ej. 3 dormitorios con ascensor, cancelación gratis hasta septiembre 2027, cuna confirmada...">
+            </div>
+        </div>
+
+        <!-- TABLA DE HOTELES MONITOREADOS -->
+        <div class="watched-table-wrap">
+            <table class="watched-table">
+                <thead>
+                    <tr>
+                        <th>Ciudad & Fechas</th>
+                        <th>Alojamiento Previsto</th>
+                        <th>Configuración & Notas</th>
+                        <th>Tarifa / Noche</th>
+                        <th>Total Estadía (EUR / COP)</th>
+                        <th>vs. Presupuesto Base</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="watchlist-tbody">
+                    <!-- Renderizado por JS -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         CATÁLOGO DE LAS 35 OPCIONES DEL PIPELINE POR CIUDAD
+         ===================================================================== -->
+    <div class="section-heading-row">
+        <div>
+            <h2 style="font-size:18px; font-weight:800; color:var(--text-main);">Catálogo Verificado del Pipeline (35 Opciones + Buscadores en Vivo)</h2>
+            <p style="font-size:13px; color:var(--text-muted);">Haz clic en <strong>"📌 Monitorear"</strong> en cualquier tarjeta para subirla a tu tabla de seguimiento.</p>
+        </div>
     </div>
 
-    <div id="city-sections">
-        <!-- Generado dinámicamente -->
-    </div>
+    <div class="tabs" id="tabs"></div>
+    <div id="city-sections"></div>
 </div>
+
+<div class="toast-msg" id="toast-msg">✓ Hotel agregado a tu lista de seguimiento</div>
 
 <script>
 const DATA = {
@@ -3308,8 +3811,359 @@ const DATA = {
   }
 };
 const EUR_COP = 3636;
+const STORAGE_KEY = 'eurotracker_watched_hotels_v1';
+
+const CITY_BASE_BUDGET = {
+    barcelona: { name: '🇪🇸 Barcelona', nights: 2, dates: '11–13 Sep', baseEur: 860 },
+    paris:     { name: '🇫🇷 París',     nights: 4, dates: '13–17 Sep', baseEur: 2300 },
+    zurich:    { name: '🇨🇭 Zúrich',    nights: 2, dates: '17–19 Sep', baseEur: 1250 },
+    roma:      { name: '🇮🇹 Roma',      nights: 5, dates: '19–24 Sep', baseEur: 2350 },
+    salerno:   { name: '🌊 Salerno',   nights: 3, dates: '24–27 Sep', baseEur: 1000 }
+};
+
+const DEFAULT_WATCHLIST = [
+    {
+        id: 'w-bcn-1',
+        city: 'barcelona',
+        name: 'Habitat Apartments Boulevard (Eixample)',
+        url: 'https://www.booking.com/hotel/es/habitat-apartments-boulevard.es.html?checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=3',
+        platform: 'Booking.com',
+        nightEur: 430,
+        totalEur: 860,
+        status: 'Candidato Favorito ⭐',
+        notes: '3 Dormitorios · 🛗 Con Ascensor · Paseo de Gracia · Cuna gratis'
+    },
+    {
+        id: 'w-par-1',
+        city: 'paris',
+        name: 'Citadines Bastille Gare de Lyon Paris (3 Habs)',
+        url: 'https://www.booking.com/hotel/fr/citadines-bastille-gare-de-lyon-paris.es.html?checkin=2027-09-13&checkout=2027-09-17&group_adults=7&group_children=2&age=4&age=1&no_rooms=3',
+        platform: 'Booking.com',
+        nightEur: 540,
+        totalEur: 2160,
+        status: 'Candidato Favorito ⭐',
+        notes: '3 Estudios/Habs Privadas · 🛗 Con Ascensor · A 4 min de Gare de Lyon (TGV a Zúrich)'
+    },
+    {
+        id: 'w-zrh-1',
+        city: 'zurich',
+        name: 'Swiss Star Wiedikon — Contactless Check-in',
+        url: 'https://www.booking.com/hotel/ch/swiss-star-wiedikon.es.html?checkin=2027-09-17&checkout=2027-09-19&group_adults=7&group_children=2&age=4&age=1&no_rooms=3',
+        platform: 'Booking.com',
+        nightEur: 520,
+        totalEur: 1040,
+        status: 'En Seguimiento 👁️',
+        notes: '3 Dormitorios · 🛗 Con Ascensor · Conexión directa a Zürich HB y Lago'
+    },
+    {
+        id: 'w-rom-1',
+        city: 'roma',
+        name: 'Residenza Rione Monti — 3 Bedrooms Colosseo',
+        url: 'https://www.booking.com/searchresults.es.html?ss=Residenza+Rione+Monti+Rome&checkin=2027-09-19&checkout=2027-09-24&group_adults=7&group_children=2&age=4&age=1&no_rooms=3',
+        platform: 'Booking.com',
+        nightEur: 465,
+        totalEur: 2325,
+        status: 'Candidato Favorito ⭐',
+        notes: '3 Dormitorios · 🛗 Con Ascensor · Entre Roma Termini y el Coliseo'
+    },
+    {
+        id: 'w-sal-1',
+        city: 'salerno',
+        name: 'Gran Suite Corso Vittorio — 3 Bedrooms',
+        url: 'https://www.booking.com/searchresults.es.html?ss=Gran+Suite+Corso+Vittorio+Salerno&checkin=2027-09-24&checkout=2027-09-27&group_adults=7&group_children=2&age=4&age=1&no_rooms=3',
+        platform: 'Booking.com',
+        nightEur: 330,
+        totalEur: 990,
+        status: 'Candidato Favorito ⭐',
+        notes: '3 Dormitorios · 🛗 Con Ascensor · Calle 100% plana entre estación y Muelle Concordia'
+    }
+];
+
+function showToast(msg) {
+    const t = document.getElementById('toast-msg');
+    if (!t) return;
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function loadWatchlist() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+    } catch (e) {}
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_WATCHLIST));
+    return JSON.parse(JSON.stringify(DEFAULT_WATCHLIST));
+}
+
+function saveWatchlist(list) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    renderWatchlist();
+}
+
+function resetDefaultWatchlist() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_WATCHLIST));
+    renderWatchlist();
+    showToast('✓ Lista restaurada con los 5 hoteles base previstos');
+}
+
+function detectPlatform(url) {
+    const u = (url || '').toLowerCase();
+    if (u.includes('booking.com')) return 'Booking.com';
+    if (u.includes('airbnb.')) return 'Airbnb';
+    if (u.includes('google.com/travel')) return 'Google Hotels';
+    return 'Link Directo';
+}
+
+function autoFillFromUrl(url) {
+    const nameInput = document.getElementById('w-name');
+    if (!url || (nameInput && nameInput.value.trim() !== '')) return;
+    try {
+        const u = new URL(url);
+        if (u.hostname.includes('booking.com')) {
+            const parts = u.pathname.split('/');
+            const slug = parts[parts.length - 1].replace('.es.html', '').replace('.html', '').replace(/-/g, ' ');
+            if (slug && slug !== 'searchresults') {
+                nameInput.value = slug.replace(/\w/g, c => c.toUpperCase());
+            }
+        } else if (u.hostname.includes('airbnb')) {
+            nameInput.value = 'Apartamento Airbnb 3 Dorms';
+        }
+    } catch (e) {}
+}
+
+function getSelectedCityNights() {
+    const sel = document.getElementById('w-city');
+    const cityKey = sel ? sel.value : 'barcelona';
+    return (CITY_BASE_BUDGET[cityKey] && CITY_BASE_BUDGET[cityKey].nights) || 2;
+}
+
+function onNightPriceInput() {
+    const nightVal = parseFloat(document.getElementById('w-night-eur').value) || 0;
+    const nights = getSelectedCityNights();
+    document.getElementById('w-total-eur').value = nightVal ? Math.round(nightVal * nights) : '';
+}
+
+function onTotalPriceInput() {
+    const totalVal = parseFloat(document.getElementById('w-total-eur').value) || 0;
+    const nights = getSelectedCityNights();
+    document.getElementById('w-night-eur').value = totalVal ? Math.round(totalVal / nights) : '';
+}
+
+function recalcFormTotal() {
+    onNightPriceInput();
+}
+
+async function syncToBackendIfAvailable(item) {
+    try {
+        const cityMeta = CITY_BASE_BUDGET[item.city] || { name: item.city };
+        await fetch('/api/confirmed-bookings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                category: 'hotel',
+                item_name: item.name,
+                destination_city: cityMeta.name,
+                provider: item.platform || 'Booking/Airbnb',
+                booking_reference: item.url,
+                price_eur: item.totalEur,
+                price_cop: Math.round(item.totalEur * EUR_COP),
+                status: item.status,
+                notes: item.notes
+            })
+        });
+    } catch (e) {}
+}
+
+function addHotelToWatchlist() {
+    const url = document.getElementById('w-url').value.trim();
+    const city = document.getElementById('w-city').value;
+    let name = document.getElementById('w-name').value.trim();
+    const nightEur = parseFloat(document.getElementById('w-night-eur').value) || 0;
+    const totalEur = parseFloat(document.getElementById('w-total-eur').value) || (nightEur * getSelectedCityNights());
+    const status = document.getElementById('w-status').value;
+    const notes = document.getElementById('w-notes').value.trim() || '3 Dorms / 3 Habs Privadas';
+
+    if (!url && !name) {
+        showToast('⚠️ Pega el link del hotel o escribe su nombre');
+        return;
+    }
+    if (!name) {
+        name = 'Alojamiento en ' + (CITY_BASE_BUDGET[city] ? CITY_BASE_BUDGET[city].name : city);
+    }
+
+    const nights = getSelectedCityNights();
+    const finalNight = nightEur || Math.round(totalEur / nights) || 400;
+    const finalTotal = totalEur || Math.round(finalNight * nights);
+
+    const newItem = {
+        id: 'w-' + Date.now(),
+        city,
+        name,
+        url: url || '#',
+        platform: detectPlatform(url),
+        nightEur: finalNight,
+        totalEur: finalTotal,
+        status,
+        notes
+    };
+
+    const list = loadWatchlist();
+    list.unshift(newItem);
+    saveWatchlist(list);
+    syncToBackendIfAvailable(newItem);
+
+    document.getElementById('w-url').value = '';
+    document.getElementById('w-name').value = '';
+    document.getElementById('w-night-eur').value = '';
+    document.getElementById('w-total-eur').value = '';
+    document.getElementById('w-notes').value = '';
+
+    showToast('✓ Hotel agregado a tu tabla de seguimiento');
+}
+
+function pinCardToWatchlist(cityId, name, url, platform, nightEur, totalEur, elevator, crib) {
+    const list = loadWatchlist();
+    const exists = list.some(i => i.name === name && i.city === cityId);
+    if (exists) {
+        showToast('ℹ️ Este alojamiento ya está en tu tabla de seguimiento');
+        document.getElementById('watchlist-section').scrollIntoView({ behavior: 'smooth' });
+        return;
+    }
+    const newItem = {
+        id: 'w-' + Date.now(),
+        city: cityId,
+        name: name,
+        url: url,
+        platform: platform === 'booking' ? 'Booking.com' : 'Airbnb',
+        nightEur: Number(nightEur),
+        totalEur: Number(totalEur),
+        status: 'En Seguimiento 👁️',
+        notes: `3 Dorms/Habs · ${elevator} · ${crib}`
+    };
+    list.unshift(newItem);
+    saveWatchlist(list);
+    syncToBackendIfAvailable(newItem);
+    showToast('📌 Agregado a Mis Hoteles Previstos: ' + name);
+}
+
+function updateWatchStatus(id, newStatus) {
+    const list = loadWatchlist();
+    const item = list.find(x => x.id === id);
+    if (item) {
+        item.status = newStatus;
+        saveWatchlist(list);
+        showToast('✓ Estado actualizado');
+    }
+}
+
+function removeWatchItem(id) {
+    const list = loadWatchlist().filter(x => x.id !== id);
+    saveWatchlist(list);
+    showToast('🗑️ Alojamiento removido del seguimiento');
+}
+
+function renderWatchlist() {
+    const list = loadWatchlist();
+    const tbody = document.getElementById('watchlist-tbody');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+
+    // Calcular suma activa tomando el primer hotel favorito/activo de cada ciudad
+    const activeByCity = {};
+    list.forEach(item => {
+        if (!activeByCity[item.city] || item.status.includes('Reservado') || item.status.includes('Favorito')) {
+            if (!activeByCity[item.city] || (!activeByCity[item.city].status.includes('Reservado') && item.status.includes('Reservado'))) {
+                activeByCity[item.city] = item;
+            }
+        }
+    });
+
+    let sumEur = 0;
+    Object.keys(CITY_BASE_BUDGET).forEach(cKey => {
+        if (activeByCity[cKey]) sumEur += Number(activeByCity[cKey].totalEur || 0);
+        else sumEur += CITY_BASE_BUDGET[cKey].baseEur;
+    });
+
+    const sumCop = Math.round(sumEur * EUR_COP);
+    const cellCop = Math.round(sumCop / 3);
+    const diffEur = sumEur - 7760;
+
+    document.getElementById('watched-count-badge').textContent = `${list.length} en seguimiento`;
+    document.getElementById('w-sum-eur').textContent = `€${sumEur.toLocaleString('es-CO')} EUR`;
+    document.getElementById('w-sum-cop').textContent = `$${sumCop.toLocaleString('es-CO')} COP`;
+    document.getElementById('w-cell-cop').textContent = `$${cellCop.toLocaleString('es-CO')} COP`;
+
+    const kpiTotal = document.getElementById('kpi-watched-total');
+    const kpiDiff = document.getElementById('kpi-watched-diff');
+    if (kpiTotal) kpiTotal.textContent = `€${sumEur.toLocaleString('es-CO')} EUR`;
+    if (kpiDiff) {
+        kpiDiff.textContent = diffEur <= 0
+            ? `Ahorro vs Base (€7,760): ${diffEur} € (-$${Math.abs(Math.round(diffEur * EUR_COP)).toLocaleString('es-CO')} COP)`
+            : `Sobre Base (€7,760): +${diffEur} € (+$${Math.round(diffEur * EUR_COP).toLocaleString('es-CO')} COP)`;
+        kpiDiff.style.color = diffEur <= 0 ? '#15803d' : '#b45309';
+    }
+
+    list.forEach(item => {
+        const meta = CITY_BASE_BUDGET[item.city] || { name: item.city, nights: 2, dates: 'Sep 2027', baseEur: 1000 };
+        const totalCop = Math.round((item.totalEur || 0) * EUR_COP);
+        const paxNight = ((item.nightEur || 0) / 9).toFixed(1);
+        const diffCity = (item.totalEur || 0) - meta.baseEur;
+        const diffBadge = diffCity <= 0
+            ? `<span style="color:#15803d; font-weight:700;">${diffCity === 0 ? 'Exacto en Base' : diffCity + ' € vs base'}</span>`
+            : `<span style="color:#b45309; font-weight:700;">+${diffCity} € vs base</span>`;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>
+                <div style="font-weight:700; color:var(--text-main);">${meta.name}</div>
+                <div style="font-size:11.5px; color:var(--text-muted);">${meta.dates} · ${meta.nights} noches</div>
+            </td>
+            <td>
+                <div style="font-weight:700; color:var(--text-main);">${item.name}</div>
+                <div style="font-size:11.5px; color:var(--text-muted);">${item.platform || 'Link Directo'} · ${paxNight} €/pax/noche</div>
+            </td>
+            <td style="max-width:260px;">
+                <div style="font-size:12px; color:var(--text-secondary);">${item.notes || '3 Dorms / 3 Habs Privadas'}</div>
+            </td>
+            <td>
+                <strong style="font-size:14px; color:var(--text-main);">€${item.nightEur}</strong>
+                <span style="font-size:11.5px; color:var(--text-muted);">/noche</span>
+            </td>
+            <td>
+                <div style="font-weight:800; color:var(--text-main);">€${Number(item.totalEur).toLocaleString('es-CO')} EUR</div>
+                <div style="font-size:11.5px; color:var(--text-muted);">$${totalCop.toLocaleString('es-CO')} COP</div>
+            </td>
+            <td>
+                ${diffBadge}
+                <div style="font-size:11px; color:var(--text-muted);">Base ciudad: €${meta.baseEur}</div>
+            </td>
+            <td>
+                <select class="status-select" onchange="updateWatchStatus('${item.id}', this.value)">
+                    <option value="Candidato Favorito ⭐" ${item.status.includes('Favorito') ? 'selected' : ''}>⭐ Candidato Favorito</option>
+                    <option value="En Seguimiento 👁️" ${item.status.includes('Seguimiento') ? 'selected' : ''}>👁️ En Seguimiento</option>
+                    <option value="Reservado (Cancelación Gratis) ✅" ${item.status.includes('Reservado') ? 'selected' : ''}>✅ Reservado</option>
+                    <option value="Alternativa Backup 🔄" ${item.status.includes('Backup') ? 'selected' : ''}>🔄 Backup</option>
+                </select>
+            </td>
+            <td>
+                <div style="display:flex; gap:6px; align-items:center;">
+                    <a href="${item.url}" target="_blank" rel="noopener" class="btn-table-link">Abrir Link ↗</a>
+                    <button class="btn-table-del" onclick="removeWatchItem('${item.id}')" title="Eliminar">✕</button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
 
 function initDashboard() {
+    renderWatchlist();
+
     const tabsContainer = document.getElementById("tabs");
     const sectionsContainer = document.getElementById("city-sections");
     
@@ -3332,6 +4186,10 @@ function initDashboard() {
             const isBooking = p.platform === 'booking';
             const totalCop = Math.round(p.pricing.total_stay_eur * EUR_COP).toLocaleString('es-CO');
             const cellCop = Math.round((p.pricing.total_stay_eur * EUR_COP) / 3).toLocaleString('es-CO');
+            const primaryUrl = isBooking ? (p.booking_dates_url || p.url) : p.url;
+            const safeName = (p.name || '').replace(/'/g, "\'");
+            const safeElev = (p.elevator_status || 'Con Ascensor').replace(/'/g, "\'");
+            const safeCrib = (p.baby_policy.crib_status || 'Cuna disponible').replace(/'/g, "\'");
             
             cardsHtml += `
                 <div class="prop-card">
@@ -3342,8 +4200,10 @@ function initDashboard() {
                         <span class="rating-badge">★ ${p.rating} (${p.review_count} reseñas)</span>
                     </div>
                     <div class="card-body">
-                        <div class="prop-name">${p.name}</div>
-                        <div class="prop-zone">📍 ${p.neighborhood} · ${p.address}</div>
+                        <div>
+                            <div class="prop-name">${p.name}</div>
+                            <div class="prop-zone">📍 ${p.neighborhood} · ${p.address}</div>
+                        </div>
                         
                         <div class="specs-grid">
                             <div class="spec-item">
@@ -3364,7 +4224,7 @@ function initDashboard() {
                             <div>
                                 <div class="price-main">${p.pricing.price_per_night_eur} € <span class="price-sub">/ noche</span></div>
                                 <div class="price-sub">Total ${city.nights}N: <strong>${p.pricing.total_stay_eur} €</strong> (~$${totalCop} COP)</div>
-                                <div class="price-sub" style="color:#0f766e; font-weight:700;">Por Célula (${city.nights}N): ~$${cellCop} COP</div>
+                                <div class="price-sub" style="color:var(--accent-teal); font-weight:600;">Por Célula (${city.nights}N): ~$${cellCop} COP</div>
                             </div>
                             <div class="per-person">
                                 <div><strong>${p.pricing.cost_person_night_9} €</strong> /pax/noche (9p)</div>
@@ -3372,18 +4232,14 @@ function initDashboard() {
                             </div>
                         </div>
 
-                        <div style="margin-bottom: 4px;">
+                        <div class="tags-row">
                             ${p.pricing.within_budget_9 
-                                ? '<span class="feature-tag" style="background:#dcfce7; color:#15803d; font-weight:700; border:1px solid #86efac;">✅ Cumple Tope: &le; 65 €/pax/noche</span>' 
-                                : '<span class="feature-tag" style="background:#fee2e2; color:#991b1b; font-weight:700; border:1px solid #fca5a5;">⚠️ Supera 65 €/pax/noche</span>'}
-                            <span class="feature-tag" style="background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; font-weight:600;">🔒 ${p.privacy || '100% Privado'}</span>
-                            <span class="feature-tag" style="background:#f1f5f9; color:#0f172a; border:1px solid #cbd5e1; font-weight:700;">🛗 ${p.elevator_status || 'Con Ascensor'}</span>
-                        </div>
-
-                        <div>
-                            <span class="feature-tag tag-baby">👶 ${p.baby_policy.crib_status}</span>
-                            <span class="feature-tag tag-transit">🚇 ${p.location.transit_proximity}</span>
-                            <span class="feature-tag tag-direct">🔗 ${p.link_type || 'Enlace Directo'}</span>
+                                ? '<span class="feature-tag tag-ok">✓ ≤ 65 €/pax/noche</span>' 
+                                : '<span class="feature-tag tag-warn">Supera 65 €/pax/noche</span>'}
+                            <span class="feature-tag">🛗 ${p.elevator_status || 'Con Ascensor'}</span>
+                            <span class="feature-tag">🔒 ${p.privacy || '100% Privado'}</span>
+                            <span class="feature-tag">👶 ${p.baby_policy.crib_status}</span>
+                            <span class="feature-tag">🚇 ${p.location.transit_proximity}</span>
                         </div>
 
                         <div class="baby-box">
@@ -3391,23 +4247,24 @@ function initDashboard() {
                         </div>
                     </div>
                     <div class="card-footer">
+                        <div class="footer-primary-row">
+                            <a href="${primaryUrl}" target="_blank" rel="noopener" class="btn-link btn-primary-open">
+                                ${isBooking ? '🏨 Abrir en Booking (' + city.checkin.slice(5) + ') ↗' : '🏠 Abrir en Airbnb (' + city.checkin.slice(5) + ') ↗'}
+                            </a>
+                            <button type="button" class="btn-link btn-pin-watch" onclick="pinCardToWatchlist('${city.id}', '${safeName}', '${primaryUrl}', '${p.platform}', ${p.pricing.price_per_night_eur}, ${p.pricing.total_stay_eur}, '${safeElev}', '${safeCrib}')">
+                                📌 Monitorear
+                            </button>
+                        </div>
                         ${isBooking ? `
-                            <a href="${p.booking_dates_url || p.url}" target="_blank" rel="noopener" class="btn-link btn-booking">
-                                🏨 Abrir Ficha en Booking con Fechas (${city.checkin} al ${city.checkout}) ↗
+                        <div class="footer-secondary-row">
+                            <a href="${p.booking_search_prop_url || p.booking_dates_url}" target="_blank" rel="noopener" class="btn-sec-link">
+                                🔍 Búsqueda 9 Pax en Booking ↗
                             </a>
-                            <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                                <a href="${p.booking_search_prop_url || p.booking_dates_url}" target="_blank" rel="noopener" class="btn-link" style="background:#1d4ed8; font-size:12px; padding:8px 10px; flex:1; min-width:130px;">
-                                    🔍 Buscar en Booking (9 Pax) ↗
-                                </a>
-                                <a href="${p.google_hotels_url}" target="_blank" rel="noopener" class="btn-link" style="background:#1a73e8; font-size:12px; padding:8px 10px; flex:1; min-width:130px;">
-                                    🌟 Google Hotels & Mapa ↗
-                                </a>
-                            </div>
-                        ` : `
-                            <a href="${p.url}" target="_blank" rel="noopener" class="btn-link btn-airbnb">
-                                🏠 Ver Apartamento 3+ Dorms en Airbnb (${city.checkin} al ${city.checkout}) ↗
+                            <a href="${p.google_hotels_url}" target="_blank" rel="noopener" class="btn-sec-link">
+                                🌐 Google Hotels & Mapa ↗
                             </a>
-                        `}
+                        </div>
+                        ` : ''}
                     </div>
                 </div>
             `;
@@ -3416,39 +4273,26 @@ function initDashboard() {
         const liveUrls = city.live_search_urls || {};
 
         sec.innerHTML = `
-            <div class="city-header" style="flex-direction: column; align-items: flex-start; gap: 14px;">
-                <div style="width: 100%; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+            <div class="city-header">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
                     <div>
-                        <div class="city-title">${city.name}, ${city.country} — Check-in: ${city.checkin} | Check-out: ${city.checkout} (${city.nights} noches)</div>
-                        <div class="city-meta"><strong>Barrios Clave:</strong> ${city.target_neighborhoods.join(', ')} | <strong>Transporte:</strong> ${city.key_transit.join(', ')}</div>
+                        <div class="city-title">${city.name}, ${city.country} — Check-in: ${city.checkin} · Check-out: ${city.checkout} (${city.nights} noches)</div>
+                        <div class="city-meta"><strong>Barrios Clave:</strong> ${city.target_neighborhoods.join(', ')} · <strong>Transporte:</strong> ${city.key_transit.join(', ')}</div>
                     </div>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <span class="feature-tag" style="background:#f0fdf4; color:#166534; font-weight:700; border:1px solid #86efac; font-size:13px; padding:6px 12px;">🔒 3 Dorms / 3 Habs Privadas (Cero Extraños)</span>
-                        <span class="feature-tag tag-baby" style="font-size: 13px; padding: 6px 12px;">Tope: ≤ 65 €/pax/noche (máx 585 €/noche)</span>
+                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                        <span class="feature-tag tag-ok">3 Dorms / 3 Habs Privadas</span>
+                        <span class="feature-tag">Presupuesto Base: €${CITY_BASE_BUDGET[city.id] ? CITY_BASE_BUDGET[city.id].baseEur : ''} EUR</span>
                     </div>
                 </div>
 
-                <!-- BOTONES DE BÚSQUEDA EN VIVO PARAMETRIZADOS -->
-                <div style="width: 100%; background: #f8fafc; border: 1px dashed #94a3b8; border-radius: 10px; padding: 14px 16px;">
-                    <div style="font-size: 12.5px; font-weight: 800; color: #1e293b; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
-                        <span>🔎 Buscadores en Vivo con Fechas Exactas (${city.checkin} → ${city.checkout} · 7 Adultos + 2 Niños [4 y 1 año]):</span>
-                    </div>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <a href="${liveUrls.booking_apartments_3br || '#'}" target="_blank" rel="noopener" style="background:#003580; color:white; font-size:12.5px; font-weight:700; padding:8px 14px; border-radius:8px; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
-                            🏢 Booking: Apartamentos Enteros (3 Dormitorios) ↗
-                        </a>
-                        <a href="${liveUrls.booking_hotels_3rooms || '#'}" target="_blank" rel="noopener" style="background:#1d4ed8; color:white; font-size:12.5px; font-weight:700; padding:8px 14px; border-radius:8px; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
-                            🏨 Booking: Hoteles (3 Habitaciones Privadas / 1 por Célula) ↗
-                        </a>
-                        <a href="${liveUrls.booking_apartments_entire || '#'}" target="_blank" rel="noopener" style="background:#0f766e; color:white; font-size:12.5px; font-weight:700; padding:8px 14px; border-radius:8px; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
-                            🏡 Booking: Todas las Propiedades Privadas ↗
-                        </a>
-                        <a href="${liveUrls.airbnb_apartments_3br || '#'}" target="_blank" rel="noopener" style="background:#ff385c; color:white; font-size:12.5px; font-weight:700; padding:8px 14px; border-radius:8px; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
-                            🏠 Airbnb: Casas/Aptos Enteros (Mín. 3 Dorms · ≤585€) ↗
-                        </a>
-                        <a href="${liveUrls.google_hotels_city || '#'}" target="_blank" rel="noopener" style="background:#1a73e8; color:white; font-size:12.5px; font-weight:700; padding:8px 14px; border-radius:8px; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
-                            🌟 Google Hotels: Mapa & Tarifas ${city.name} ↗
-                        </a>
+                <div class="live-search-bar">
+                    <span class="live-search-label">🔎 Buscadores en Vivo (${city.checkin} → ${city.checkout} · 9 Pax):</span>
+                    <div class="live-search-pills">
+                        <a href="${liveUrls.booking_apartments_3br || '#'}" target="_blank" rel="noopener" class="search-pill">Booking: Aptos 3 Dorms ↗</a>
+                        <a href="${liveUrls.booking_hotels_3rooms || '#'}" target="_blank" rel="noopener" class="search-pill">Booking: Hoteles 3 Habs ↗</a>
+                        <a href="${liveUrls.booking_apartments_entire || '#'}" target="_blank" rel="noopener" class="search-pill">Booking: Todo Privado ↗</a>
+                        <a href="${liveUrls.airbnb_apartments_3br || '#'}" target="_blank" rel="noopener" class="search-pill">Airbnb: Mín. 3 Dorms ↗</a>
+                        <a href="${liveUrls.google_hotels_city || '#'}" target="_blank" rel="noopener" class="search-pill">Google Hotels Mapa ↗</a>
                     </div>
                 </div>
             </div>

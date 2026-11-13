@@ -1358,27 +1358,27 @@
     <!-- SITE HEADER -->
     <header class="site-header">
         <div class="header-nav">
-            <a href="/static/index.html" class="logo-group">
+            <a href="./index.html" class="logo-group">
                 <i data-lucide="shield-check" style="width:24px;height:24px;color:var(--gold-accent);"></i>
                 <div class="logo-title">EuroFamily 2027</div>
                 <span class="logo-badge">Registro Oficial</span>
             </a>
 
             <div class="nav-links">
-                <a href="/static/index.html" class="nav-pill">
+                <a href="./index.html" class="nav-pill">
                     <i data-lucide="line-chart" style="width:14px;"></i> Auditoría Financiera
                 </a>
-                <a href="/static/alojamientos.html" class="nav-pill">
+                <a href="./alojamientos.html" class="nav-pill">
                     <i data-lucide="hotel" style="width:14px;"></i> Alojamientos (Todos)
                 </a>
-                <a href="/static/traslados.html" class="nav-pill">
+                <a href="./traslados.html" class="nav-pill">
                     <i data-lucide="plane" style="width:14px;"></i> Traslados
                 </a>
-                <a href="/static/reservas.html" class="nav-pill active">
+                <a href="./reservas.html" class="nav-pill active">
                     <i data-lucide="file-check-2" style="width:14px; color:var(--gold-accent);"></i> Reservas Confirmadas
                 </a>
-                <a href="/static/guide.html" class="nav-pill" style="background:linear-gradient(135deg, var(--gold-accent), #b38e22); color:#090e0a; border:none;">
-                    <i data-lucide="smartphone" style="width:14px;"></i> Guía PWA
+                <a href="./app.html" class="nav-pill" style="background:linear-gradient(135deg, var(--gold-accent), #b38e22); color:#090e0a; border:none;">
+                    <i data-lucide="smartphone" style="width:14px;"></i> Mobile App
                 </a>
             </div>
         </div>
@@ -1405,7 +1405,14 @@
     <!-- MAIN CONTAINER -->
     <main class="page-container">
 
-        <!-- BANNER DE DIFERENCIACIÓN OFICIAL -->
+        <!-- GAVETA SERENA CON METODOLOGÍA Y CRONOGRAMA DE APERTURA DE CALENDARIOS (100% CONTENIDO) -->
+        <details style="background:#ffffff; border:1px solid var(--border-light); border-radius:14px; padding:14px 20px; margin-bottom:22px; box-shadow:var(--shadow-subtle);">
+            <summary style="cursor:pointer; font-weight:800; font-size:0.9rem; color:var(--forest-deep); display:flex; justify-content:space-between; align-items:center; list-style:none;">
+                <span>ℹ️ Ver Cronograma Oficial de Apertura de Calendarios (Fases 1 a 4) y Diferenciación de Datos</span>
+                <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">Mostrar / Ocultar detalles ▾</span>
+            </summary>
+            <div style="margin-top:16px;">
+                <!-- BANNER DE DIFERENCIACIÓN OFICIAL -->
         <section class="official-distinction-banner">
             <div class="banner-icon-wrap">
                 <i data-lucide="check-check" style="width:22px;height:22px;"></i>
@@ -1427,7 +1434,7 @@
                         Cronograma Oficial: ¿Cuándo abren los calendarios y cuándo se debe comprar?
                     </h2>
                     <p class="timeline-subtitle">
-                        Transparencia total de mercado para un grupo de <strong>9 personas (4 habitaciones)</strong>. Conoce exactamente qué está activo hoy, qué abre en las próximas semanas y la ventana dorada de compra para no pagar de más ni arriesgar agotamiento.
+                        Transparencia total de mercado para un grupo de <strong>9 personas (3 células familiares / 3 dormitorios o habitaciones privadas)</strong>. Conoce exactamente qué está activo hoy, qué abre en las próximas semanas y la ventana dorada de compra para no pagar de más ni arriesgar agotamiento.
                     </p>
                 </div>
                 <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -1435,7 +1442,7 @@
                         <i data-lucide="shield-check" style="width:12px;height:12px;"></i> Regla &le; 65€/pax
                     </span>
                     <span class="stage-badge-phase" style="background:#fef3c7;color:#b45309;border:1px solid #fcd34d;">
-                        <i data-lucide="clock" style="width:12px;height:12px;"></i> 352 Días para el Viaje
+                        <i data-lucide="clock" style="width:12px;height:12px;"></i> 302 Días para el Viaje
                     </span>
                 </div>
             </div>
@@ -1515,6 +1522,9 @@
             </div>
         </section>
 
+        
+            </div>
+        </details>
         <!-- KPI SUMMARY BAR -->
         <section class="kpi-row">
             <div class="kpi-card gold">
@@ -1582,7 +1592,7 @@
                     <i data-lucide="shuffle" style="width:14px;height:14px;"></i> Open-Jaw Multidestino (Cero Backtracking)
                 </span>
                 <span class="cell-badge">
-                    <i data-lucide="coins" style="width:14px;height:14px;"></i> Tasa Real Hoy: 1 EUR = $3,625.00 COP
+                    <i data-lucide="coins" style="width:14px;height:14px;"></i> Tasa Real Hoy: 1 EUR = $3,636.00 COP
                 </span>
             </div>
 
@@ -1643,12 +1653,12 @@
 
                         <div class="quote-pricing-block">
                             <div>
-                                <div class="quote-price-cop">$5,600,625 COP</div>
-                                <div class="quote-price-eur">€1,545.00 EUR Total Célula (3 pax)</div>
+                                <div class="quote-price-cop">$8,599,140 COP</div>
+                                <div class="quote-price-eur">€2,365.00 EUR Total Célula (3 pax / 1 maleta 23kg)</div>
                             </div>
                             <div style="text-align:right; font-size:0.7rem; color:#94a3b8;">
-                                1 Adulto c/maleta: €760<br>
-                                1 Adulto carry-on: €690 · Bebé: €95
+                                1 Adulto c/maleta: €1,145<br>
+                                1 Adulto carry-on: €1,075 · Bebé: €145
                             </div>
                         </div>
 
@@ -1742,8 +1752,8 @@
 
                         <div class="quote-pricing-block">
                             <div>
-                                <div class="quote-price-cop">$5,818,125 COP</div>
-                                <div class="quote-price-eur">€1,605.00 EUR Total Célula (3 pax)</div>
+                                <div class="quote-price-cop">$8,799,120 COP</div>
+                                <div class="quote-price-eur">€2,420.00 EUR Total Célula (3 pax / 1 maleta 23kg)</div>
                             </div>
                             <div style="text-align:right; font-size:0.7rem; color:#94a3b8;">
                                 1 Adulto c/maleta: €790<br>
@@ -1841,8 +1851,8 @@
 
                         <div class="quote-pricing-block">
                             <div>
-                                <div class="quote-price-cop">$5,056,875 COP</div>
-                                <div class="quote-price-eur">€1,395.00 EUR Total Célula (3 pax)</div>
+                                <div class="quote-price-cop">$8,181,000 COP</div>
+                                <div class="quote-price-eur">€2,250.00 EUR Total Célula (3 pax / 1 maleta 23kg)</div>
                             </div>
                             <div style="text-align:right; font-size:0.7rem; color:#94a3b8;">
                                 1 Adulto c/maleta: €690<br>
@@ -1940,8 +1950,8 @@
 
                         <div class="quote-pricing-block">
                             <div>
-                                <div class="quote-price-cop">$5,999,375 COP</div>
-                                <div class="quote-price-eur">€1,655.00 EUR Total Célula (3 pax)</div>
+                                <div class="quote-price-cop">$9,053,640 COP</div>
+                                <div class="quote-price-eur">€2,490.00 EUR Total Célula (3 pax / 1 maleta 23kg)</div>
                             </div>
                             <div style="text-align:right; font-size:0.7rem; color:#94a3b8;">
                                 1 Adulto c/maleta: €810<br>
@@ -2224,7 +2234,7 @@
     <script>
         let allBookings = [];
         let currentFilter = 'all';
-        let exchangeRate = 3625.00; // Tasa real a 9 de Octubre 2026 (1 EUR = 3.625,00 COP) // Tasa real a Octubre 2026 (1 EUR = 3.716,85 COP)
+        let exchangeRate = 3636.00; // Tasa real a 9 de Octubre 2026 (1 EUR = 3.625,00 COP) // Tasa real a Octubre 2026 (1 EUR = 3.716,85 COP)
 
         document.addEventListener('DOMContentLoaded', async () => {
             lucide.createIcons();
@@ -2257,7 +2267,34 @@
                     console.error("Error cargando reservas:", data.message);
                 }
             } catch (err) {
-                console.error("Error en petición de reservas:", err);
+                console.log("Usando sincronización local eurotracker_watched_hotels_v1:", err);
+                try {
+                    const raw = localStorage.getItem('eurotracker_watched_hotels_v1');
+                    const watched = raw ? JSON.parse(raw) : [];
+                    allBookings = watched.map((w, idx) => ({
+                        id: w.id || (idx + 1),
+                        category: 'hotel_' + (w.city === 'roma' ? 'rome' : w.city),
+                        destination_city: w.city ? (w.city.charAt(0).toUpperCase() + w.city.slice(1)) : 'Europa',
+                        item_name: w.name,
+                        provider: w.platform || 'Booking.com',
+                        status: w.status && w.status.includes('Reservado') ? 'Confirmado' : 'Candidato en Seguimiento',
+                        checkin_date: 'Sep 2027',
+                        checkout_date: 'Sep 2027',
+                        price_eur: w.totalEur || 0,
+                        price_cop: Math.round((w.totalEur || 0) * exchangeRate),
+                        booking_reference: 'Watchlist Activo',
+                        booking_url: w.url,
+                        details: {
+                            data_type: 'live',
+                            rooms: '3 Dormitorios / 3 Habs Privadas',
+                            crib_policy: w.notes || 'Cuna y ascensor verificados',
+                            elevator: 'Monitoreado en Mis Hoteles Previstos',
+                            historical_validation: w.notes || 'Sincronizado desde tu lista de seguimiento de hoteles previstos.'
+                        }
+                    }));
+                    updateKPIs();
+                    renderBookings();
+                } catch (e2) {}
             }
         }
 

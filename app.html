@@ -872,7 +872,53 @@
                 </div>
             </div>
 
-                        <!-- ACCOMMODATION RULES & LIVE SEARCH -->
+                        
+            <!-- ======================================================== -->
+            <!-- MIS HOTELES PREVISTOS & MONITOREADOS (WATCHLIST MOBILE)  -->
+            <!-- ======================================================== -->
+            <div style="margin-top:20px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <h3 style="font-size:1.02rem; font-weight:800; color:#ffffff;">📌 Mis Hoteles Previstos (Watchlist)</h3>
+                    <span style="font-size:0.71rem; color:var(--text-muted);">Agrega y monitorea los links de tus hoteles por ciudad</span>
+                </div>
+                <span id="mob-watch-total-badge" style="font-size:0.68rem; font-weight:800; background:rgba(74,222,128,0.15); color:#4ade80; border:1px solid rgba(74,222,128,0.35); padding:3px 8px; border-radius:999px;">€7,375</span>
+            </div>
+
+            <div class="app-card highlight" style="padding:14px;">
+                <div style="font-size:0.74rem; font-weight:800; color:var(--gold-light); margin-bottom:8px;">
+                    ➕ Pegar Link de Hotel (Booking / Airbnb)
+                </div>
+                <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
+                    <input type="url" id="mob-w-url" placeholder="https://www.booking.com/hotel/..." oninput="mobAutoFillName(this.value)" style="width:100%; padding:8px 10px; border-radius:8px; border:1px solid var(--border-subtle); background:rgba(0,0,0,0.35); color:#ffffff; font-size:0.78rem;">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                        <select id="mob-w-city" onchange="mobRecalcTotal()" style="padding:8px 10px; border-radius:8px; border:1px solid var(--border-subtle); background:#121a13; color:#ffffff; font-size:0.76rem;">
+                            <option value="barcelona">🇪🇸 Barcelona (2N)</option>
+                            <option value="paris">🇫🇷 París (4N)</option>
+                            <option value="zurich">🇨🇭 Zúrich (2N)</option>
+                            <option value="roma">🇮🇹 Roma (5N)</option>
+                            <option value="salerno">🌊 Salerno (3N)</option>
+                        </select>
+                        <select id="mob-w-status" style="padding:8px 10px; border-radius:8px; border:1px solid var(--border-subtle); background:#121a13; color:#ffffff; font-size:0.76rem;">
+                            <option value="Candidato Favorito ⭐">⭐ Favorito</option>
+                            <option value="En Seguimiento 👁️">👁️ Seguimiento</option>
+                            <option value="Reservado (Cancelación Gratis) ✅">✅ Reservado</option>
+                        </select>
+                    </div>
+                    <input type="text" id="mob-w-name" placeholder="Nombre del hotel (o automático del link)" style="width:100%; padding:8px 10px; border-radius:8px; border:1px solid var(--border-subtle); background:rgba(0,0,0,0.35); color:#ffffff; font-size:0.78rem;">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                        <input type="number" id="mob-w-night" placeholder="€/Noche (ej. 430)" oninput="mobRecalcTotal()" style="padding:8px 10px; border-radius:8px; border:1px solid var(--border-subtle); background:rgba(0,0,0,0.35); color:#ffffff; font-size:0.78rem;">
+                        <input type="number" id="mob-w-total" placeholder="Total € (ej. 860)" style="padding:8px 10px; border-radius:8px; border:1px solid var(--border-subtle); background:rgba(0,0,0,0.35); color:#ffffff; font-size:0.78rem;">
+                    </div>
+                    <input type="text" id="mob-w-notes" placeholder="Notas (ej. 3 dorms con ascensor, cuna gratis)..." style="width:100%; padding:8px 10px; border-radius:8px; border:1px solid var(--border-subtle); background:rgba(0,0,0,0.35); color:#ffffff; font-size:0.76rem;">
+                    <button type="button" onclick="mobAddWatchedHotel()" style="background:var(--gold-accent); color:#090e0a; border:none; padding:9px 14px; border-radius:8px; font-size:0.78rem; font-weight:900; cursor:pointer;">
+                        + Guardar Hotel en Seguimiento
+                    </button>
+                </div>
+
+                <div id="mob-watchlist-container" style="display:flex; flex-direction:column; gap:8px;"></div>
+            </div>
+
+            <!-- ACCOMMODATION RULES & LIVE SEARCH -->
             <div style="margin-top:20px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
                 <div>
                     <h3 style="font-size:1.05rem; font-weight:800; color:#ffffff;">Pipeline de Alojamientos (3 Dorms / 3 Habs)</h3>
@@ -1048,7 +1094,7 @@
                         <span class="bot-status-tag" style="background:#dcfce7; color:#15803d;">En Línea</span>
                     </div>
                     <p style="font-size:0.74rem; color:var(--text-muted); margin-top:2px;">
-                        Tasa de cambio $3,636 COP/EUR y recálculo en vivo de la variación presupuestal (-$36.5M COP ahorrados).
+                        Tasa de cambio $3,636 COP/EUR y recálculo en vivo de la variación presupuestal (-$12.89M COP [-11.09%] vs PDF inicial).
                     </p>
                 </div>
             </div>
@@ -1170,6 +1216,7 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
             if (tabId === 'itinerario') renderDayCarousel();
+            mobRenderWatchlist();
             if (tabId === 'reservas') loadBookings();
             lucide.createIcons();
         }
@@ -1450,10 +1497,157 @@
         }
 
         // Init App on Load
+        
+        // ========================================================
+        // WATCHLIST DE HOTELES PREVISTOS EN MOBILE APP
+        // ========================================================
+        var MOB_WATCH_KEY = 'eurotracker_watched_hotels_v1';
+        var MOB_CITY_META = {
+            barcelona: { name: '🇪🇸 Barcelona', nights: 2, baseEur: 860 },
+            paris:     { name: '🇫🇷 París',     nights: 4, baseEur: 2300 },
+            zurich:    { name: '🇨🇭 Zúrich',    nights: 2, baseEur: 1250 },
+            roma:      { name: '🇮🇹 Roma',      nights: 5, baseEur: 2350 },
+            salerno:   { name: '🌊 Salerno',   nights: 3, baseEur: 1000 }
+        };
+        var MOB_DEFAULT_WATCH = [
+            { id: 'w-bcn-1', city: 'barcelona', name: 'Habitat Apartments Boulevard (Eixample)', url: 'https://www.booking.com/hotel/es/habitat-apartments-boulevard.es.html?checkin=2027-09-11&checkout=2027-09-13&group_adults=7&group_children=2&age=4&age=1&no_rooms=3', platform: 'Booking.com', nightEur: 430, totalEur: 860, status: 'Candidato Favorito ⭐', notes: '3 Dormitorios · 🛗 Con Ascensor · Paseo de Gracia' },
+            { id: 'w-par-1', city: 'paris', name: 'Citadines Bastille Gare de Lyon Paris (3 Habs)', url: 'https://www.booking.com/hotel/fr/citadines-bastille-gare-de-lyon-paris.es.html?checkin=2027-09-13&checkout=2027-09-17&group_adults=7&group_children=2&age=4&age=1&no_rooms=3', platform: 'Booking.com', nightEur: 540, totalEur: 2160, status: 'Candidato Favorito ⭐', notes: '3 Habs Privadas · 🛗 Con Ascensor · Gare de Lyon' },
+            { id: 'w-zrh-1', city: 'zurich', name: 'Swiss Star Wiedikon — Contactless Check-in', url: 'https://www.booking.com/hotel/ch/swiss-star-wiedikon.es.html?checkin=2027-09-17&checkout=2027-09-19&group_adults=7&group_children=2&age=4&age=1&no_rooms=3', platform: 'Booking.com', nightEur: 520, totalEur: 1040, status: 'En Seguimiento 👁️', notes: '3 Dormitorios · 🛗 Con Ascensor · Zürich HB' },
+            { id: 'w-rom-1', city: 'roma', name: 'Residenza Rione Monti — 3 Bedrooms Colosseo', url: 'https://www.booking.com/searchresults.es.html?ss=Residenza+Rione+Monti+Rome&checkin=2027-09-19&checkout=2027-09-24&group_adults=7&group_children=2&age=4&age=1&no_rooms=3', platform: 'Booking.com', nightEur: 465, totalEur: 2325, status: 'Candidato Favorito ⭐', notes: '3 Dormitorios · 🛗 Con Ascensor · Rione Monti' },
+            { id: 'w-sal-1', city: 'salerno', name: 'Gran Suite Corso Vittorio — 3 Bedrooms', url: 'https://www.booking.com/searchresults.es.html?ss=Gran+Suite+Corso+Vittorio+Salerno&checkin=2027-09-24&checkout=2027-09-27&group_adults=7&group_children=2&age=4&age=1&no_rooms=3', platform: 'Booking.com', nightEur: 330, totalEur: 990, status: 'Candidato Favorito ⭐', notes: '3 Dormitorios · 🛗 Con Ascensor · Muelle Concordia' }
+        ];
+
+        function mobLoadWatchlist() {
+            try {
+                const raw = localStorage.getItem(MOB_WATCH_KEY);
+                if (raw) {
+                    const p = JSON.parse(raw);
+                    if (Array.isArray(p) && p.length > 0) return p;
+                }
+            } catch (e) {}
+            localStorage.setItem(MOB_WATCH_KEY, JSON.stringify(MOB_DEFAULT_WATCH));
+            return JSON.parse(JSON.stringify(MOB_DEFAULT_WATCH));
+        }
+
+        function mobSaveWatchlist(list) {
+            localStorage.setItem(MOB_WATCH_KEY, JSON.stringify(list));
+            mobRenderWatchlist();
+        }
+
+        function mobAutoFillName(url) {
+            const nameEl = document.getElementById('mob-w-name');
+            if (!url || !nameEl || nameEl.value.trim() !== '') return;
+            try {
+                const u = new URL(url);
+                if (u.hostname.includes('booking.com')) {
+                    const parts = u.pathname.split('/');
+                    const slug = parts[parts.length - 1].replace('.es.html', '').replace('.html', '').replace(/-/g, ' ');
+                    if (slug && slug !== 'searchresults') {
+                        nameEl.value = slug.replace(/\b\w/g, c => c.toUpperCase());
+                    }
+                } else if (u.hostname.includes('airbnb')) {
+                    nameEl.value = 'Apartamento Airbnb 3 Dorms';
+                }
+            } catch (e) {}
+        }
+
+        function mobRecalcTotal() {
+            const c = document.getElementById('mob-w-city').value;
+            const nights = (MOB_CITY_META[c] && MOB_CITY_META[c].nights) || 2;
+            const nVal = parseFloat(document.getElementById('mob-w-night').value) || 0;
+            if (nVal) document.getElementById('mob-w-total').value = Math.round(nVal * nights);
+        }
+
+        function mobAddWatchedHotel() {
+            const url = document.getElementById('mob-w-url').value.trim();
+            const city = document.getElementById('mob-w-city').value;
+            let name = document.getElementById('mob-w-name').value.trim();
+            const nights = (MOB_CITY_META[city] && MOB_CITY_META[city].nights) || 2;
+            const nightEur = parseFloat(document.getElementById('mob-w-night').value) || 0;
+            const totalEur = parseFloat(document.getElementById('mob-w-total').value) || (nightEur * nights);
+            const status = document.getElementById('mob-w-status').value;
+            const notes = document.getElementById('mob-w-notes').value.trim() || '3 Dorms / 3 Habs Privadas';
+
+            if (!url && !name) {
+                showToast('Pega el link del hotel o escribe su nombre');
+                return;
+            }
+            if (!name) name = 'Hotel en ' + MOB_CITY_META[city].name;
+            const fNight = nightEur || Math.round(totalEur / nights) || 400;
+            const fTotal = totalEur || Math.round(fNight * nights);
+
+            const item = {
+                id: 'w-' + Date.now(),
+                city, name, url: url || './alojamientos.html',
+                platform: url.includes('airbnb') ? 'Airbnb' : 'Booking.com',
+                nightEur: fNight, totalEur: fTotal, status, notes
+            };
+            const list = mobLoadWatchlist();
+            list.unshift(item);
+            mobSaveWatchlist(list);
+
+            document.getElementById('mob-w-url').value = '';
+            document.getElementById('mob-w-name').value = '';
+            document.getElementById('mob-w-night').value = '';
+            document.getElementById('mob-w-total').value = '';
+            document.getElementById('mob-w-notes').value = '';
+            showToast('✓ Hotel guardado en seguimiento');
+        }
+
+        function mobDeleteWatched(id) {
+            const list = mobLoadWatchlist().filter(x => x.id !== id);
+            mobSaveWatchlist(list);
+            showToast('Hotel eliminado');
+        }
+
+        function mobRenderWatchlist() {
+            const box = document.getElementById('mob-watchlist-container');
+            if (!box) return;
+            const list = mobLoadWatchlist();
+            box.innerHTML = '';
+
+            let sumEur = 0;
+            const activeByCity = {};
+            list.forEach(item => {
+                if (!activeByCity[item.city]) activeByCity[item.city] = item;
+            });
+            Object.keys(MOB_CITY_META).forEach(k => {
+                sumEur += activeByCity[k] ? Number(activeByCity[k].totalEur || 0) : MOB_CITY_META[k].baseEur;
+            });
+            const badge = document.getElementById('mob-watch-total-badge');
+            if (badge) badge.textContent = `Total 16N: €${sumEur.toLocaleString('es-CO')} ($${Math.round(sumEur * EUR_RATE / 1000000).toFixed(1)}M)`;
+
+            list.forEach(item => {
+                const m = MOB_CITY_META[item.city] || { name: item.city, nights: 2 };
+                const cop = Math.round((item.totalEur || 0) * EUR_RATE);
+                const div = document.createElement('div');
+                div.style.cssText = 'background:rgba(0,0,0,0.3); border:1px solid var(--border-subtle); border-radius:10px; padding:10px;';
+                div.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+                        <div>
+                            <div style="font-size:0.68rem; font-weight:800; color:var(--gold-accent);">${m.name} (${m.nights}N) • ${item.status}</div>
+                            <div style="font-size:0.82rem; font-weight:800; color:#ffffff; margin-top:2px;">${item.name}</div>
+                            <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">${item.notes || ''}</div>
+                        </div>
+                        <button onclick="mobDeleteWatched('${item.id}')" style="background:transparent; border:none; color:var(--text-muted); font-size:0.8rem; cursor:pointer;">✕</button>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.06);">
+                        <div>
+                            <strong style="font-size:0.85rem; color:#4ade80;">€${item.totalEur} EUR</strong>
+                            <span style="font-size:0.68rem; color:var(--text-muted);"> (€${item.nightEur}/n • $${cop.toLocaleString('es-CO')})</span>
+                        </div>
+                        <a href="${item.url}" target="_blank" style="background:#003580; color:#ffffff; text-decoration:none; padding:5px 10px; border-radius:6px; font-size:0.68rem; font-weight:800;">Abrir Link ↗</a>
+                    </div>
+                `;
+                box.appendChild(div);
+            });
+        }
+
         window.onload = () => {
             if (window.lucide) lucide.createIcons();
             selectCellTab(1);
             renderDayCarousel();
+            mobRenderWatchlist();
 
             // 1. Recover from LocalStorage immediately (Zero blank screen offline)
             try {
