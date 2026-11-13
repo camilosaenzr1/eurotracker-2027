@@ -1,4 +1,4 @@
-const CACHE_NAME = 'eurotracker-pwa-v7-20261112';
+const CACHE_NAME = 'eurotracker-pwa-v8-20261113';
 const ASSETS_TO_CACHE = [
   './manifest.json',
   './app.html',
